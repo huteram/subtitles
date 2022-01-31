@@ -256,7 +256,12 @@ class XLS:
             for iii in Workbook[i]['Data']:
                 for ii in iii:#Workbook[i]['Head']:
                     if ii in Workbook[i]['Head']:
-                        MySheet.cell(row=row,column=Workbook[i]['Head'][ii]).value = iii[ii]
+##                        print(i,ii,iii[ii])
+                        try:
+                            MySheet.cell(row=row,column=Workbook[i]['Head'][ii]).value = iii[ii]
+                        except:
+                            print("trouble with this item to write it to Excel")
+                            print(i,ii,iii[ii])
                     else:
                         if lastHead == 0:
                             for headItem in Workbook[i]['Head']:
@@ -264,7 +269,12 @@ class XLS:
                         lastHead += 1
                         Workbook[i]['Head'][ii] = lastHead
                         MySheet.cell(row=1,column=Workbook[i]['Head'][ii]).value = ii
-                        MySheet.cell(row=row,column=Workbook[i]['Head'][ii]).value = iii[ii]
+                        try:
+                            MySheet.cell(row=row,column=Workbook[i]['Head'][ii]).value = iii[ii]
+                        except:
+                            print("trouble with this item to write it to Excel")
+                            print(i,ii,iii[ii])
+                            
                         
                 row += 1    
         wb.save(FileName)

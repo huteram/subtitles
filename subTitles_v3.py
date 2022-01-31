@@ -81,8 +81,11 @@ for Language in Languages:
                 Sentence[auxSentence]["Stop"] = TimeStop
                 aSentence[Text.lower()] = auxSentence
                 TimeRange = []
-                for TimeItem in range(convertToSec(TimeStart),convertToSec(TimeStop)):
-                    TimeRange.append(TimeItem)
+                if convertToSec(TimeStart) == convertToSec(TimeStop):
+                    TimeRange.append(convertToSec(TimeStart))
+                else:
+                    for TimeItem in range(convertToSec(TimeStart),convertToSec(TimeStop)):
+                        TimeRange.append(TimeItem)
                 Sentence[auxSentence]["Range"] = str(TimeRange)[1:-1]
             
         

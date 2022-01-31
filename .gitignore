@@ -128,3 +128,5 @@ dmypy.json
 *.avi
 
 subtitleDict.xlsx
+
+back/
