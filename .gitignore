@@ -123,10 +123,14 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-*.mp4
+# video file
+avi/*
+!avi/readMe.txt
 
-*.avi
+# subtitles
+subtitles/*
 
+# output database
 subtitleDict.xlsx
 
 back/
