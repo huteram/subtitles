@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Player - test</title>
+  <style type="text/css">
+    .center { 
+      margin-left: auto;
+      margin-right: auto; 
+      display: block;
+       }
+  </style>
+</head>
+<body>
+  <video id="myvideo" width="500px"; class="center">
+	<source src="file:../avi/Man.On.The.Moon.mp4">
+    <p>Your browser does not support this video format.</p>
+  </video>
+  <p><button onclick="myFunction()">Random selection</button></p>
+  
+  
+
+  <button onclick="settime()">Click To Action!</button>
+  
+  <div id="EnWord">EnWord</div>
+  <div id="EnSentence">EnSentence</div>
+  <div id="CZSentence">CZSentence</div>
+
+  <script type="text/javascript">
+  
+	var Selector = 0;
+	const TimeList = [
+{word: 'his', EN_sentence: "Andy's up in his room? ", CZ_sentence: '- Je Andy u sebe?\n- Ano.', Start: 291.41700000000003, Stop: 294.988, Duration: 4070.9999999999695},
+{word: 'room', EN_sentence: "Andy's up in his room? ", CZ_sentence: '- Je Andy u sebe?\n- Ano.', Start: 291.41700000000003, Stop: 294.988, Duration: 4070.9999999999695},
+{word: 'yeah', EN_sentence: 'No original sentence.', CZ_sentence: '', Start: 294.66700000000003, Stop: 296.20799999999997, Duration: 2040.99999999994},
+{word: 'mr', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'bear', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'saying', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'mrs', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'cat', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'made', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'head', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'fall', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'off', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Číča prý panu Méďovi\nurazila kebuli.Paní Méďová tvrdí,\nže to tak nebylo.', Start: 297.573, Stop: 309.208, Duration: 12135.000000000047},
+{word: 'she', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Méďová tvrdí,\nže to tak nebylo.', Start: 301.708, Stop: 309.208, Duration: 8000.0},
+{word: 'saw', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Méďová tvrdí,\nže to tak nebylo.', Start: 301.708, Stop: 309.208, Duration: 8000.0},
+{word: 'true', EN_sentence: "Mr. Bear is saying that Mrs. Cat made his head fall off. She saw it And it's not true. ", CZ_sentence: 'Paní Méďová tvrdí,\nže to tak nebylo.', Start: 301.708, Stop: 309.208, Duration: 8000.0},
+{word: 'today', EN_sentence: "Today's special guest, Mr. Bear. - What's up, Mr. Bear? - Andy? ", CZ_sentence: '- Naším hostem je pan Méďa.\n- Andy?', Start: 309.198, Stop: 314.583, Duration: 5885.000000000047},
+{word: 'special', EN_sentence: "Today's special guest, Mr. Bear. - What's up, Mr. Bear? - Andy? ", CZ_sentence: '- Naším hostem je pan Méďa.\n- Andy?', Start: 309.198, Stop: 314.583, Duration: 5885.000000000047},
+{word: 'guest', EN_sentence: "Today's special guest, Mr. Bear. - What's up, Mr. Bear? - Andy? ", CZ_sentence: '- Naším hostem je pan Méďa.\n- Andy?', Start: 309.198, Stop: 314.583, Duration: 5885.000000000047},
+{word: 'what', EN_sentence: "Today's special guest, Mr. Bear. - What's up, Mr. Bear? - Andy? ", CZ_sentence: '- Naším hostem je pan Méďa.\n- Andy?', Start: 309.198, Stop: 314.583, Duration: 5885.000000000047},
+{word: 'son', EN_sentence: 'Son, this has got to stop. ', CZ_sentence: 'Synu, tak už to dál nejde.', Start: 320.781, Stop: 323.779, Duration: 3497.9999999999905},
+{word: 'has', EN_sentence: 'Son, this has got to stop. ', CZ_sentence: 'Synu, tak už to dál nejde.', Start: 320.781, Stop: 323.779, Duration: 3497.9999999999905},
+{word: 'got', EN_sentence: 'Son, this has got to stop. ', CZ_sentence: 'Synu, tak už to dál nejde.', Start: 320.781, Stop: 323.779, Duration: 3497.9999999999905},
+{word: 'stop', EN_sentence: 'Son, this has got to stop. ', CZ_sentence: 'Synu, tak už to dál nejde.', Start: 320.781, Stop: 323.779, Duration: 3497.9999999999905},
+{word: 'television', EN_sentence: "Our house is not a television station. There's not a camera in that wall. ", CZ_sentence: 'Nejsi v televizi.\nNení tu kamera.', Start: 324.614, Stop: 329.95799999999997, Duration: 5843.9999999999945},
+{word: 'station', EN_sentence: "Our house is not a television station. There's not a camera in that wall. ", CZ_sentence: 'Nejsi v televizi.\nNení tu kamera.', Start: 324.614, Stop: 329.95799999999997, Duration: 5843.9999999999945},
+{word: 'there', EN_sentence: "Our house is not a television station. There's not a camera in that wall. ", CZ_sentence: 'Nejsi v televizi.\nNení tu kamera.', Start: 324.614, Stop: 329.95799999999997, Duration: 5843.9999999999945},
+{word: 'camera', EN_sentence: "Our house is not a television station. There's not a camera in that wall. ", CZ_sentence: 'Nejsi v televizi.\nNení tu kamera.', Start: 324.614, Stop: 329.95799999999997, Duration: 5843.9999999999945},
+{word: 'wall', EN_sentence: "Our house is not a television station. There's not a camera in that wall. ", CZ_sentence: 'Nejsi v televizi.\nNení tu kamera.', Start: 324.614, Stop: 329.95799999999997, Duration: 5843.9999999999945},
+
+];
+	
+	function randomIntFromInterval(min, max) { // min and max included 
+	  return Math.floor(Math.random() * (max - min + 1) + min)
+	}
+
+	function myFunction() {
+	  var EnWord = document.getElementById("EnWord");
+	  var EnSentence = document.getElementById("EnSentence");
+	  var CzSentence = document.getElementById("CZSentence");
+	  Selector = randomIntFromInterval(0, 14)
+	  EnWord.innerHTML = TimeList[Selector].word
+	  EnSentence.innerHTML = TimeList[Selector].EN_sentence
+	  CZSentence.innerHTML = TimeList[Selector].CZ_sentence
+}
+    
+    function settime(){
+      var video= document.getElementById("myvideo");
+      video.currentTime=TimeList[Selector].Start;
+      video.play();
+      console.log(video.currentTime);
+      setInterval(function(){
+        
+        if(video.currentTime>TimeList[Selector].Stop){
+          
+          video.pause();
+        }
+      },TimeList[Selector].Duration);
+    }
+  </script>
+</body>
+</html>

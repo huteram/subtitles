@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Player - test</title>
+  <style type="text/css">
+    .center { 
+      margin-left: auto;
+      margin-right: auto; 
+      display: block;
+       }
+  </style>
+</head>
+<body>
+  <video id="myvideo" width="500px"; class="center">
+	<source src="file:../avi/Man.On.The.Moon.mp4">
+    <p>Your browser does not support this video format.</p>
+  </video>
+  <p><button onclick="myFunction()">Random selection</button></p>
+  
+  
+
+  <button onclick="settime()">Click To Action!</button>
+  
+  <div id="EnWord">EnWord</div>
+  <div id="EnSentence">EnSentence</div>
+  <div id="CZSentence">CZSentence</div>
+
+  <script type="text/javascript">
+  
+	var Selector = 0;
+	const TimeList = [
+XXXjson
+						];
+	
+	function randomIntFromInterval(min, max) { // min and max included 
+	  return Math.floor(Math.random() * (max - min + 1) + min)
+	}
+
+	function myFunction() {
+	  var EnWord = document.getElementById("EnWord");
+	  var EnSentence = document.getElementById("EnSentence");
+	  var CzSentence = document.getElementById("CZSentence");
+	  Selector = randomIntFromInterval(0, 14)
+	  EnWord.innerHTML = TimeList[Selector].word
+	  EnSentence.innerHTML = TimeList[Selector].EN_sentence
+	  CZSentence.innerHTML = TimeList[Selector].CZ_sentence
+}
+    
+    function settime(){
+      var video= document.getElementById("myvideo");
+      video.currentTime=TimeList[Selector].Start;
+      video.play();
+      console.log(video.currentTime);
+      setInterval(function(){
+        
+        if(video.currentTime>TimeList[Selector].Stop){
+          
+          video.pause();
+        }
+      },TimeList[Selector].Duration);
+    }
+  </script>
+</body>
+</html>
