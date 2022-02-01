@@ -129,6 +129,7 @@ avi/*
 
 # subtitles
 subtitles/*
+!subtitles/readMe.txt
 
 # output database
 subtitleDict.xlsx
