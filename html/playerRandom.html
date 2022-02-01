@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Player - test</title>
+  <style type="text/css">
+    .center { 
+      margin-left: auto;
+      margin-right: auto; 
+      display: block;
+       }
+  </style>
+</head>
+<body>
+  <video id="myvideo" width="500px"; class="center">
+	<source src="file:../avi/Man.On.The.Moon.mp4">
+    <p>Your browser does not support this video format.</p>
+  </video>
+  <p><button onclick="myFunction()">Random selection</button></p>
+  
+  
+
+  <button onclick="settime()">Click To Action!</button>
+  
+  <div id="myDIV">Hello</div>
+
+  <script type="text/javascript">
+  
+	var Selector = 0;
+	const TimeList = [{start:502.8, stop:505.8, duration:3500, text:"text0"},
+	{start:1000.8,stop:1005.8, duration:5500, text:"text1"},
+	{start:602.8,stop:605.8, duration:3500, text:"text2"},
+	{start:662.8,stop:665.8, duration:3500, text:"text3"},
+	{start:780.8,stop:785.8, duration:5500, text:"text4"},
+	{start:200.8,stop:205.8, duration:5500, text:"text5"}];
+	
+	function randomIntFromInterval(min, max) { // min and max included 
+	  return Math.floor(Math.random() * (max - min + 1) + min)
+	}
+
+	function myFunction() {
+	  var x = document.getElementById("myDIV");
+	  Selector = randomIntFromInterval(0, 5)
+	  x.innerHTML = TimeList[Selector].text
+}
+    
+    function settime(){
+      var video= document.getElementById("myvideo");
+      video.currentTime=TimeList[Selector].start;
+      video.play();
+      console.log(video.currentTime);
+      setInterval(function(){
+        
+        if(video.currentTime>TimeList[Selector].stop){
+          
+          video.pause();
+        }
+      },TimeList[Selector].duration);
+    }
+  </script>
+</body>
+</html>
