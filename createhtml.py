@@ -86,8 +86,10 @@ class htmlCreator:
 
     def htmlJsonExport(self,Language = 'EN'):
         jsonList = []
-        textJson = b"[\r\n"
-        for Word in self.Words[self.Language].keys():
+        textJson = b"\r\n"
+        WordList = list(self.Words[self.Language].keys())
+        self.wordCounter=str(len(WordList)-1).encode()
+        for Word in WordList:
 
             self.Times = []
             self.Word = Word
@@ -130,10 +132,10 @@ class htmlCreator:
             aux["Start"] = self.convertToSec(self.Start)
             aux["Stop"] = self.convertToSec(self.Stop)
             aux["Duration"] = 1000*((aux["Stop"] - aux["Start"]) + 0.5)
-            textJson += str(aux).encode()
+            textJson += str(aux).encode().replace(b'\n',b' ').replace(b'\r',b'').replace(b'\\n',b' ')
             textJson += b",\r\n"
             jsonList.append(aux)
-        textJson += b"]"
+        
         textJson = textJson.replace(b"'word'",b"word")
         orgL = "'" + Language+"_sentence'"
         newL = Language+"_sentence"
@@ -142,6 +144,10 @@ class htmlCreator:
         textJson = textJson.replace(b"'Start'",b"Start")
         textJson = textJson.replace(b"'Stop'",b"Stop")
         textJson = textJson.replace(b"'Duration'",b"Duration")
+        textJson = textJson.replace(b": word",b": 'word'")
+        textJson = textJson.replace(b": Start",b": 'Start'")
+        textJson = textJson.replace(b": Stop",b": 'Stop'")
+        textJson = textJson.replace(b": Duration",b": 'Duration'")
         return jsonList,textJson
             
             
@@ -158,7 +164,9 @@ class htmlCreator:
 if __name__ == "__main__":
     html = htmlCreator()
     k,T = html.htmlJsonExport()
+##    T = T.replace(b'\n',b' ').replace(b'\r',b'')
     xx = MujSoubor.Soubor()
     htmlTemp = xx.Nahraj("Template\\Temp.html")
-    htmlTemp = htmlTemp.replace(b"XXXjson",T)
+    htmlTemp = htmlTemp.replace(b"XXXjson",T).replace(b"XXXlength",html.wordCounter)
     xx.Uloz(htmlTemp,"html\\subtitleRandom.html")
+    
