@@ -8,7 +8,6 @@ import MyFile
 import random
 import os
 import time
-import MujSoubor
 
 class htmlCreator:
     def __init__(self):
@@ -165,8 +164,8 @@ if __name__ == "__main__":
     html = htmlCreator()
     k,T = html.htmlJsonExport()
 ##    T = T.replace(b'\n',b' ').replace(b'\r',b'')
-    xx = MujSoubor.Soubor()
-    htmlTemp = xx.Nahraj("Template\\Temp.html")
+    xx = MyFile.FileSystem()
+    htmlTemp = xx.readFile("Template\\Temp.html")
     htmlTemp = htmlTemp.replace(b"XXXjson",T).replace(b"XXXlength",html.wordCounter)
-    xx.Uloz(htmlTemp,"html\\subtitleRandom.html")
+    xx.SaveFile(htmlTemp,"html\\subtitleRandom.html")
     

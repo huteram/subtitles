@@ -140,6 +140,24 @@ class FileSystem:
             SeznamAdresaru = s
         return SeznamAdresaru
 
+    def SaveFile(self,Data, FileName = 'Soubor.txt'):
+        """Saving data to the file name. There can be full path."""
+        
+        if FileName =='' or FileName[0]== '\\':
+            FileName = os.getcwd() + FileName
+            
+        LenName = len(FileName.split('\\')[-1])
+        Directory = FileName[:-LenName]            
+        self.MakeDirectory(Directory)
+        File=open(FileName,'w')
+        File.write(' ')
+        File.close()
+        File=open(FileName,'r+')      # 'a' append , 'w' write prepise stary, 'r' read
+        DataFile = mmap.mmap(File.fileno(),len(Data))
+        DataFile.write(Data)
+        DataFile.close()
+        File.close()    
+
     def rename(self, FileName, NewName):
         if self.FileExists(FileName):
             try:
