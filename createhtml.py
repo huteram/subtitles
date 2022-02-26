@@ -30,49 +30,14 @@ class htmlCreator:
                 self.Words[Language][word["Word"]]=word
             for sentence in self.Subtitles[Language+"_sentence"]["Data"]:
                 self.Sentences[Language][sentence["Id"]]=sentence
-        self.randomWord()
+
 
     def __initLanguages(self,Languages):
         for Language in Languages:
             self.Words[Language] = {}
             self.Sentences[Language] = {}
             
-    def randomWord(self,Language = 'EN'):
-        self.Times = []
-        self.Word = random.choice(list(self.Words[self.Language].keys()))
-        WordId = int(self.Words[self.Language][self.Word]['sentence'][1:-1].split(",")[0])
-        WordSentence = self.Sentences[self.Language][WordId]['Text']
-
-        self.Times.append(self.Sentences[self.Language][WordId]['Start'])
-        self.Times.append(self.Sentences[self.Language][WordId]['Stop'])
-
-        WordCzId = self.Sentences[Language][WordId]['CZ_Id']
-        self.TranslatedSentence = "Nejsou CZ titulky."
-        self.OriginalSentence = "No original sentence."
-
-        WordIds = ""
-
-        if WordCzId != 0:
-            self.TranslatedSentence = ""
-            for czItem in WordCzId.split(','):
-                if int(czItem) > 0:
-                    self.TranslatedSentence += self.Sentences["CZ"][int(czItem)]["Text"]
-                    WordIds += self.Sentences["CZ"][int(czItem)][Language + '_Id'].replace('\n',' ')+','
-                    self.Times.append(self.Sentences["CZ"][int(czItem)]['Start'])
-                    self.Times.append(self.Sentences["CZ"][int(czItem)]['Stop'])
-
-        if len(WordIds) > 0:
-            self.OriginalSentence = ""
-            for WordItem in WordIds.split(','):
-                if WordItem != "":
-                    self.OriginalSentence += self.Sentences[Language][int(WordItem)]["Text"] +" "
-                    self.Times.append(self.Sentences[Language][int(WordItem)]['Start'])
-                    self.Times.append(self.Sentences[Language][int(WordItem)]['Stop'])
-                    
-        self.Times.sort()
-        self.Start = self.Times[0]
-        self.Stop = self.Times[-1]
-        
+       
     def convertToSec(self,Time):
         TimeList = Time.split(":")
         gain = 1
@@ -83,57 +48,46 @@ class htmlCreator:
         return float(TimeMsec)
 
 
-    def htmlJsonExport(self,Language = 'EN'):
-        jsonList = []
+    def htmlWordExport(self,Language = 'EN'):
+        jsonWords = {}
         textJson = b"\r\n"
-        WordList = list(self.Words[self.Language].keys())
-        self.wordCounter=str(len(WordList)-1).encode()
+        WordList = self.Words[Language]
+        SentenceList = self.Sentences[Language]
+        a = 0
+
         for Word in WordList:
+            Item = WordList[Word]
+            jsonWords[WordList[Word]['Id']] = WordList[Word]
+            a+=1
+            if a>4:
+                break
 
-            self.Times = []
-            self.Word = Word
-            WordId = int(self.Words[self.Language][self.Word]['sentence'][1:-1].split(",")[0])
-            WordSentence = self.Sentences[self.Language][WordId]['Text']
+        textJson = str(jsonWords).encode().replace(b'\n',b' ').replace(b'\r',b'').replace(b'\\n',b' ')
+        textJson += b",\r\n"
 
-            self.Times.append(self.Sentences[self.Language][WordId]['Start'])
-            self.Times.append(self.Sentences[self.Language][WordId]['Stop'])
+        for Key in list(Item.keys()):    
+            K = Key.encode()    
+            textJson = textJson.replace(b"'%s'" % K,b"%s" % K)
 
-            WordCzId = self.Sentences[Language][WordId]['CZ_Id']
-            self.TranslatedSentence = "Nejsou CZ titulky."
-            self.OriginalSentence = "No original sentence."
+        return textJson
 
-            WordIds = ""
 
-            if WordCzId != 0:
-                self.TranslatedSentence = ""
-                for czItem in WordCzId.split(','):
-                    if int(czItem) > 0:
-                        self.TranslatedSentence += self.Sentences["CZ"][int(czItem)]["Text"]
-                        WordIds += self.Sentences["CZ"][int(czItem)][Language + '_Id'].replace('\n',' ')+','
-                        self.Times.append(self.Sentences["CZ"][int(czItem)]['Start'])
-                        self.Times.append(self.Sentences["CZ"][int(czItem)]['Stop'])
 
-            if len(WordIds) > 0:
-                self.OriginalSentence = ""
-                for WordItem in WordIds.split(','):
-                    if WordItem != "":
-                        self.OriginalSentence += self.Sentences[Language][int(WordItem)]["Text"] +" "
-                        self.Times.append(self.Sentences[Language][int(WordItem)]['Start'])
-                        self.Times.append(self.Sentences[Language][int(WordItem)]['Stop'])
-                        
-            self.Times.sort()
-            self.Start = self.Times[0]
-            self.Stop = self.Times[-1]
-            aux = {}
-            aux["word"] = Word
-            aux[Language+"_sentence"] = self.OriginalSentence
-            aux["CZ_sentence"] = self.TranslatedSentence
-            aux["Start"] = self.convertToSec(self.Start)
-            aux["Stop"] = self.convertToSec(self.Stop)
-            aux["Duration"] = 1000*((aux["Stop"] - aux["Start"]) + 0.5)
-            textJson += str(aux).encode().replace(b'\n',b' ').replace(b'\r',b'').replace(b'\\n',b' ')
-            textJson += b",\r\n"
-            jsonList.append(aux)
+    def htmlSentenceExport(self,Language = 'EN'):
+        jsonWords = {}
+        textJson = b"\r\n"
+        SentenceList = self.Sentences[Language]
+        for Sentence in SentenceList:
+            Item = SentenceList[Sentence]
+            Item['Start'] = self.convertToSec(Item['Start'])
+            Item['Stop'] = self.convertToSec(Item['Stop'])
+            Item['Duration'] = 1000*(Item['Stop'] - Item["Start"])       
+            jsonWords[Item['Id']] = Item     
+
+
+
+        textJson = str(jsonList).encode().replace(b'\n',b' ').replace(b'\r',b'').replace(b'\\n',b' ')
+        textJson += b",\r\n"
         
         textJson = textJson.replace(b"'word'",b"word")
         orgL = "'" + Language+"_sentence'"
@@ -162,10 +116,10 @@ class htmlCreator:
 
 if __name__ == "__main__":
     html = htmlCreator()
-    k,T = html.htmlJsonExport()
+    T = html.htmlWordExport()
 ##    T = T.replace(b'\n',b' ').replace(b'\r',b'')
     xx = MyFile.FileSystem()
     htmlTemp = xx.readFile("Template\\Temp.html")
-    htmlTemp = htmlTemp.replace(b"XXXjson",T).replace(b"XXXlength",html.wordCounter)
+    htmlTemp = htmlTemp.replace(b"XXXjson",T)
     xx.SaveFile(htmlTemp,"html\\subtitleRandom.html")
     
