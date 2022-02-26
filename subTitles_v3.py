@@ -8,6 +8,8 @@ import vlc
 ##media.play()
 ##media.pause()
 
+
+
 def convertToSec(Time):
     TimeList = Time.split(b":")
     gain = 1
@@ -25,20 +27,33 @@ def Coding(Text):
         result = Text.decode('cp1250').encode('utf-8')
     return result
 
+
+## init 
 yy = MujXLS.XLS()
 xx = MyFile.FileSystem()
 
+# regex - expretion for all words.
+# reSentences - all sentence.
+# reTime - Time row.
+# reTimeStartStop - find times in time row.
 regex = re.compile("[A-Za-záčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ]+".encode('utf-8'))
 reSentences = re.compile("[A-ZáčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ][A-Za-záčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ ,\r\n]+".encode('utf-8'))
 reTime = re.compile(b"[0-9]+:[0-9]+:[0-9 ,]+--> [0-9]+:[0-9]+:[0-9 ,]+")
 reTimeStartStop = re.compile(b"[0-9]+:[0-9]+:[0-9 ,]+")
 
+
+# in subtitles directory there should be directory with the languages. 
+# For example (\\subtitles\\CZ, \\subtitles\\EN) Czech and English. The directory names are used for distinguesh languages. 
 Languages = xx.ListDir("\\subtitles\\*")
+# set excel sheet.
 xlsSheet = {}
 TimeSentence = {}
-for Language in Languages:
-    TimeSentence[Language] = {}
 
+
+for Language in Languages:
+
+    
+    TimeSentence[Language] = {}
     Files = xx.listFile("\\subtitles\\" + Language + "\\")
     for i in Files:
         titulky = Coding(xx.readFile(i))
@@ -46,9 +61,8 @@ for Language in Languages:
     Words = {}
     Sentence = {}
     aSentence = {}
-
-    auxSentence = 1
-    auxWords = 1
+    idSentence = 1
+    idWord = 1
 
 
     for i in re.split(b"\r\n[0-9]+\r\n",titulky):
@@ -64,49 +78,59 @@ for Language in Languages:
             
         else:
             TimeStart = Time[0]
-            TimeStop = Time[1]
             Text = i.split(TimeStop)[-1][2:-2]
             if (Text.lower() not in aSentence):
-                auxSentence += 1
+                Sentence[idSentence] = {}
+                Sentence[idSentence]["Words"] = []
                 for Word in regex.findall(Text):
                     if (Word.lower() in Words):
-                        if (auxSentence not in Words[Word.lower()]):
-                            Words[Word.lower()].append(auxSentence)
+                        # check if this sentence is already added to the word's sentence list.                        
+                        if (idSentence not in Words[Word.lower()]["sentence"]):
+                            Words[Word.lower()]["sentence"].append(idSentence)
+                            Sentence[idSentence]["Words"].append(Words[Word.lower()]["Id"])
+
                     else:
-                        Words[Word.lower()] = [auxSentence]
-                Sentence[auxSentence] = {}
-                Sentence[auxSentence]["Id"] = auxSentence
-                Sentence[auxSentence]["Text"] = Text
-                Sentence[auxSentence]["Start"] = TimeStart
-                Sentence[auxSentence]["Stop"] = TimeStop
-                aSentence[Text.lower()] = auxSentence
+                        Words[Word.lower()] = {}
+                        Words[Word.lower()]["sentence"] = [idSentence]
+                        Words[Word.lower()]["Id"] = idWord                        
+                        Sentence[idSentence]["Words"].append(idWord)
+                        idWord += 1
+                
+                Sentence[idSentence]["Id"] = idSentence
+                Sentence[idSentence]["Text"] = Text
+                Sentence[idSentence]["Start"] = TimeStart
+                Sentence[idSentence]["Stop"] = TimeStop
+                aSentence[Text.lower()] = idSentence
                 TimeRange = []
                 if convertToSec(TimeStart) == convertToSec(TimeStop):
                     TimeRange.append(convertToSec(TimeStart))
                 else:
                     for TimeItem in range(convertToSec(TimeStart),convertToSec(TimeStop)):
                         TimeRange.append(TimeItem)
-                Sentence[auxSentence]["Range"] = str(TimeRange)[1:-1]
+                Sentence[idSentence]["Range"] = str(TimeRange)[1:-1]
+                idSentence += 1
             
         
     DataSentence = []
     dataWords = []
     for i in Sentence:
+        Sentence[i]["Words"] = str(Sentence[i]["Words"])[1:-1]
         DataSentence.append(Sentence[i])
     for i in Words:
         aux = {}
         aux["Word"] = i
-        aux["count"] = str(len(Words[i]))
-        aux["sentence"] = str(Words[i])
+        aux["Id"] = Words[i]["Id"]
+        aux["count"] = str(len(Words[i]["sentence"]))
+        aux["sentence"] = str(Words[i]["sentence"])[1:-1]
         dataWords.append(aux)
     WordLanguage = Language + "_words"
     xlsSheet[WordLanguage] = {}
     xlsSheet[WordLanguage]["Data"] = dataWords
-    xlsSheet[WordLanguage]["Head"] = {"Word":1,"count":2,"sentence":3}
+    xlsSheet[WordLanguage]["Head"] = {"Id":1,"Word":2,"count":3,"sentence":4}
     SentenceLanguage = Language + "_sentence"
     xlsSheet[SentenceLanguage] = {}
     xlsSheet[SentenceLanguage]["Data"] = DataSentence
-    xlsSheet[SentenceLanguage]["Head"] = {"Id":1,"Text":2,"Start":3,"Stop":4}
+    xlsSheet[SentenceLanguage]["Head"] = {"Id":1,"Text":2,"Start":3,"Stop":4,"Words":5,}
 
 SentenceConnection = {}
 for Language in Languages:
@@ -143,13 +167,6 @@ for Language in Languages:
         newData.append(i)
     xlsSheet[SentenceLanguage]["Data"] = newData
     
-    
-                    
-                
-                
-        
-    
-
-            
+         
 yy.SaveXLS("subtitleDict.xlsx",xlsSheet)
 

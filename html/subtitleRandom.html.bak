@@ -19,7 +19,7 @@
   
   
 
-  <button onclick="settime()">Play video!</button>
+  <button onclick="settime()">Click To Action!</button>
   
   <div id="EnWord">EnWord</div>
   <div id="EnSentence">EnSentence</div>

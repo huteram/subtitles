@@ -12,7 +12,7 @@
 </head>
 <body>
   <video id="myvideo" width="500px"; class="center">
-	<source src="file:../avi/Man.On.The.Moon.mp4">
+	<source src="">
     <p>Your browser does not support this video format.</p>
   </video>
   <p><button onclick="myFunction()">Random selection</button></p>
@@ -20,10 +20,20 @@
   
 
   <button onclick="settime()">Play video!</button>
+  <button onclick="videoSelection()">select video!</button>
+  
+  <label for="videoFile">Choose a profile picture:</label>
+
+	<input type="file"
+		   id="videoFile" name="videoFile"
+		   accept="video/*" >
+  
+  
   
   <div id="EnWord">EnWord</div>
   <div id="EnSentence">EnSentence</div>
   <div id="CZSentence">CZSentence</div>
+  
 
   <script type="text/javascript">
   
@@ -73,6 +83,15 @@
 	  EnSentence.innerHTML = TimeList[Selector].EN_sentence
 	  CZSentence.innerHTML = TimeList[Selector].CZ_sentence
 }
+
+    function videoSelection(){
+      var video= document.getElementById("myvideo");
+	  var selector = document.getElementById("videoFile");
+	  var CzSentence = document.getElementById("CZSentence");
+	  video.src = selector.value;
+	  CZSentence.innerHTML = selector.files[0].name;
+	  
+	  }
     
     function settime(){
       var video= document.getElementById("myvideo");
