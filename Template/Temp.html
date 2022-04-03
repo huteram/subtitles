@@ -1,64 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Player - test</title>
-  <style type="text/css">
-    .center { 
-      margin-left: auto;
-      margin-right: auto; 
-      display: block;
-       }
-  </style>
+    <title>Learn Languages from Subtitles</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="mini-default.css">
+
 </head>
+
 <body>
-  <video id="myvideo" width="500px"; class="center">
-	<source src="file:../avi/Man.On.The.Moon.mp4">
-    <p>Your browser does not support this video format.</p>
-  </video>
-  <p><button onclick="myFunction()">Random selection</button></p>
-  
-  
+    <header class="sticky row">
+        <div class="col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
+            <img src="mh.png" alt="logo" style="width: 50px; float: left; border-radius: 50%;">
+            <h1>&nbsp;Learn Languages from Subtitles</h1>
+        </div>
+    </header>
+    <!--  The container of the grid system and all of the content appears below.  -->
+    <div class="container">
+        <!-- Video -->
+        <div class="row">
+            <div class="col-sm-12 col-md-10 col-lg-6 col-md-offset-1 col-lg-offset-3">
+                <p>&nbsp;</p>
+                <video id="myvideo" width="100%">
+					<source src="file:../avi/Avatar.mkv">
+					<p>Your browser does not support this video format.</p>
+				</video>
+                <p>Avatar.mkv</p>
+            </div>
+        </div>
+        <!-- Listboxes -->
 
-  <button onclick="settime()">Click To Action!</button>
-  
-  <div id="EnWord">EnWord</div>
-  <div id="EnSentence">EnSentence</div>
-  <div id="CZSentence">CZSentence</div>
+        <div class="row">
+            <div class="col-sm-12 col-md-3 col-lg-2 col-md-first col-sm-last">
+                <h2>Words</h2>
+                <select id="select_word_en" size="10" style="width:100%" onclick="selecteItem()">
+					<!-- will be filling by JS -->XXXoptionWord
+				</select>
+            </div>
 
-  <script type="text/javascript">
-  
-	var Selector = 0;
-	const TimeList = [
-XXXjson
-						];
-	
-	function randomIntFromInterval(min, max) { // min and max included 
-	  return Math.floor(Math.random() * (max - min + 1) + min)
-	}
+            <div class="col-sm-12 col-md-9 col-lg-10">
+                <h2>Sentences</h2>
+                <select id="select_sentence_en" role="listbox" size="10" style="width:100%">
+					<!-- will be filling by JS -->XXXoptionSentence
 
-	function myFunction() {
-	  var EnWord = document.getElementById("EnWord");
-	  var EnSentence = document.getElementById("EnSentence");
-	  var CzSentence = document.getElementById("CZSentence");
-	  Selector = randomIntFromInterval(0, XXXlength)
-	  EnWord.innerHTML = TimeList[Selector].word
-	  EnSentence.innerHTML = TimeList[Selector].EN_sentence
-	  CZSentence.innerHTML = TimeList[Selector].CZ_sentence
-}
-    
-    function settime(){
-      var video= document.getElementById("myvideo");
-      video.currentTime=TimeList[Selector].Start;
-      video.play();
-      console.log(video.currentTime);
-      setInterval(function(){
-        
-        if(video.currentTime>TimeList[Selector].Stop){
-          
-          video.pause();
+				</select>
+            </div>
+        </div>
+    </div>
+
+    <!--  The footer is pretty simple to make, too!  -->
+    <footer class="row">
+        <div class="col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
+            <p>
+                <smal>&copy;2022 Milan Hutera</small>
+            </p>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+        const czSentence = XXXczSentence;
+        const czWords = XXXczWords;
+        const enSentences = XXXenSentence;
+        const enWords = XXXenWords;
+
+
+        var aria = aria || {};
+        var word = {}
+        aria.Listbox = function(listboxNode) {
+            this.listboxNode = listboxNode;
+
+        };
+
+        function displayDate() {
+            document.getElementById("demo").innerHTML = Date();
         }
-      },TimeList[Selector].Duration);
-    }
-  </script>
+
+        function selecteItem() {
+
+
+            var selObj = document.getElementById("select_word_en");
+            aria.id = document.getElementById("select_word_en").value;
+            var word_selected = selObj[aria.id].getAttribute("word_selected");
+            var ss = enSentences[aria.id]
+            if (word_selected == 'true') {
+                selObj[aria.id].setAttribute("word_selected", "false");
+                delete word[aria.id];
+            } else {
+                selObj[aria.id].setAttribute("word_selected", "true");
+                word[aria.id] = TimeList[aria.id];
+
+            }
+
+
+            //document.getElementById("select_sentence_en").options.add(selObj[aria.id]);  
+            return true;
+        }
+    </script>
+
 </body>
+
 </html>

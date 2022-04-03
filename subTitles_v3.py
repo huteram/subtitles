@@ -78,6 +78,7 @@ for Language in Languages:
             
         else:
             TimeStart = Time[0]
+            TimeStop = Time[1]
             Text = i.split(TimeStop)[-1][2:-2]
             if (Text.lower() not in aSentence):
                 Sentence[idSentence] = {}
@@ -107,21 +108,21 @@ for Language in Languages:
                 else:
                     for TimeItem in range(convertToSec(TimeStart),convertToSec(TimeStop)):
                         TimeRange.append(TimeItem)
-                Sentence[idSentence]["Range"] = str(TimeRange)[1:-1]
+                Sentence[idSentence]["Range"] = str(TimeRange)
                 idSentence += 1
             
         
     DataSentence = []
     dataWords = []
     for i in Sentence:
-        Sentence[i]["Words"] = str(Sentence[i]["Words"])[1:-1]
+        Sentence[i]["Words"] = str(Sentence[i]["Words"])
         DataSentence.append(Sentence[i])
     for i in Words:
         aux = {}
         aux["Word"] = i
         aux["Id"] = Words[i]["Id"]
         aux["count"] = str(len(Words[i]["sentence"]))
-        aux["sentence"] = str(Words[i]["sentence"])[1:-1]
+        aux["sentence"] = str(Words[i]["sentence"])
         dataWords.append(aux)
     WordLanguage = Language + "_words"
     xlsSheet[WordLanguage] = {}
@@ -138,14 +139,16 @@ for Language in Languages:
     SentenceConnection[Language] = {}
     SentenceLanguage = Language + "_sentence"
     for i in xlsSheet[SentenceLanguage]["Data"]:
-        for TimeSec in i["Range"].split(','):
+        TimeRange = i["Range"][1:-1].split(',')
+        for TimeSec in TimeRange:
             SentenceConnection[Language][int(TimeSec)] = i["Id"]
 
 for Language in Languages:
     newData = []
     SentenceLanguage = Language + "_sentence"
     for i in xlsSheet[SentenceLanguage]["Data"]:
-        for TimeSec in i["Range"].split(','):
+        TimeRange = i["Range"][1:-1].split(',')
+        for TimeSec in TimeRange:
             TimeSec = int(TimeSec)
             for LanguageOther in Languages:
                 if LanguageOther != Language:
@@ -162,7 +165,7 @@ for Language in Languages:
                                 i[IdName].append(Id)
                     else:
                         i[IdName] = [Id]
-        i[IdName]=str(i[IdName])[1:-1]
+        i[IdName]=str(i[IdName])
         aux = i.pop("Range")
         newData.append(i)
     xlsSheet[SentenceLanguage]["Data"] = newData
