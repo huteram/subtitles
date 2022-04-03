@@ -27,6 +27,7 @@
 					<p>Your browser does not support this video format.</p>
 				</video>
                 <p>Avatar.mkv</p>
+                <a href="#" id="randomSelect" onclick="selectRandomWord()">Select random</a>
             </div>
         </div>
         <!-- Listboxes -->
@@ -37,7 +38,7 @@
                 <select id="select_word_en" size="10" style="width:100%" onclick="selecteItem()">
 					<!-- will be filling by JS -->
 					<option value="1" role="word" word_selected="false" class="" ">hello</option>
-					<option value="2" role="word" word_selected="true" class="" ">i</option>
+					<option value="2" role="word" word_selected="false" class="" ">i</option>
 					<option value="3" role="word" word_selected="false" class="" ">am</option>
 					<option value="4" role="word" word_selected="false" class="" ">andy</option>
 					<option value="5" role="word" word_selected="false" class="" ">and</option>
@@ -253,12 +254,65 @@
 
         var aria = aria || {};
         var word = {};
+        var wordList = [];
         var sentenceList = {};
         var selectedWord = {};
         aria.Listbox = function(listboxNode) {
             this.listboxNode = listboxNode;
 
         };
+
+        function selectRandomWord() {
+            var select = document.getElementById('select_word_en');
+            var index = Math.floor(Math.random() * word.length);
+            const values = Object.values(word);
+            const randomValue = values[parseInt(Math.random() * values.length)];
+            var selectedWord = enWords[randomValue.index + 1];
+
+            select.selectedIndex = randomValue.index;
+
+            // clear senetnecs box
+            var optDefault = optSentences.options[0]
+            while (optSentences.childElementCount > 0) {
+                optSentences.options.remove(0);
+            }
+            // add sentences 
+            var valueCounter = 1;
+            for (element of selectedWord.sentence) {
+                var sentenceAdding = enSentences[element];
+                if (sentenceAdding.selected == true) {
+                    var opt = document.createElement("option");
+                    opt.text = sentenceAdding.Text
+                    opt.setAttribute("role", "word");
+                    opt.setAttribute("word_selected", sentenceAdding.selected);
+                    opt.setAttribute("IdElement", sentenceAdding.Id);
+                    opt.setAttribute("value", valueCounter);
+                    valueCounter += 1;
+                    optSentences.options.add(opt);
+                };
+
+            };
+            if (valueCounter == 1) {
+                for (element of selectedWord.sentence) {
+                    var sentenceAdding = enSentences[element];
+                    var opt = document.createElement("option");
+                    opt.text = sentenceAdding.Text
+                    opt.setAttribute("role", "word");
+                    opt.setAttribute("word_selected", sentenceAdding.selected);
+                    opt.setAttribute("IdElement", sentenceAdding.Id);
+                    opt.setAttribute("value", valueCounter);
+                    valueCounter += 1;
+                    optSentences.options.add(opt);
+                }
+            };
+
+            index = Math.floor(Math.random() * (valueCounter - 1));
+            // random sentence
+            var valuesSen = Object.values(enSentences);
+            var selectSen = document.getElementById('select_sentence_en');
+            selectSen.selectedIndex = index;
+        }
+
 
         function displayDate() {
             document.getElementById("demo").innerHTML = Date();
@@ -281,7 +335,7 @@
 
             } else {
                 selObj[selectedIdElement].setAttribute("word_selected", "true");
-                sentenceList[idElement] = {};
+                sentenceList[idElement] = selectedSentence;
                 selectedSentence.selected = true;
             }
 
@@ -325,7 +379,7 @@
                     selectedWord.selected = false;
                 } else {
                     selObj[selectedIdElement].setAttribute("word_selected", "true");
-                    word[selectedIdElement] = {};
+                    word[selectedIdElement] = selObj[selectedIdElement];
                     selectedWord.selected = true;
                 }
             }
