@@ -37,7 +37,7 @@
                 <select id="select_word_en" size="10" style="width:100%" onclick="selecteItem()">
 					<!-- will be filling by JS -->
 					<option value="1" role="word" word_selected="false" class="" ">hello</option>
-					<option value="2" role="word" word_selected="false" class="" ">i</option>
+					<option value="2" role="word" word_selected="true" class="" ">i</option>
 					<option value="3" role="word" word_selected="false" class="" ">am</option>
 					<option value="4" role="word" word_selected="false" class="" ">andy</option>
 					<option value="5" role="word" word_selected="false" class="" ">and</option>
@@ -46,13 +46,13 @@
 
             <div class="col-sm-12 col-md-9 col-lg-10">
                 <h2>Sentences</h2>
-                <select id="select_sentence_en" role="listbox" size="10" style="width:100%">
+                <select id="select_sentence_en" role="listbox" size="10" style="width:100%" onclick="selecteSentence()">
 					<!-- will be filling by JS -->
-					<option value="1" role="sentence" word_selected="false" class="" ">Hello.</option>
-					<option value="2" role="sentence" word_selected="false" class="" ">I am Andy...</option>
-					<option value="3" role="sentence" word_selected="false" class="" ">and I would like to thank you for coming to my movie.</option>
-					<option value="4" role="sentence" word_selected="false" class="" ">I wish it was better, you know,</option>
-					<option value="5" role="sentence" word_selected="false" class="" ">but... it is so stupid.</option>
+					<option value="1" role="word" word_selected="false" IdElement="1" class="" ">Hello.</option>
+					<option value="2" role="word" word_selected="false" IdElement="2" class="" ">I am Andy...</option>
+					<option value="3" role="word" word_selected="false" IdElement="3" class="" ">and I would like to thank you for coming to my movie.</option>
+					<option value="4" role="word" word_selected="false" IdElement="4" class="" ">I wish it was better, you know,</option>
+					<option value="5" role="word" word_selected="false" IdElement="5" class="" ">but... it is so stupid.</option>
 
 				</select>
             </div>
@@ -69,14 +69,192 @@
     </footer>
 
     <script type="text/javascript">
-        const czSentence = {1: {Id: 1, Text: 'INTERSONIC UVÁDÍ', Start: 5.906, Stop: 11.061, Words: [1, 2], EN_Id: [0], Duration: 5155.0}, 2: {Id: 2, Text: 'Dobrý den. Já jsem Andy.', Start: 45.406, Stop: 49.898, Words: [3, 4, 5, 6, 7], EN_Id: [1, 2], Duration: 4492.000000000005}, 3: {Id: 3, Text: 'Děkuju vám, že jste přišli na můj film.', Start: 50.906, Stop: 54.485, Words: [8, 9, 10, 11, 12, 13, 14, 15], EN_Id: [3], Duration: 3579.0000000000005}, 4: {Id: 4, Text: 'Škoda, že není lepší. To víte...', Start: 56.281, Stop: 60.819, Words: [16, 10, 17, 18, 19, 20], EN_Id: [4], Duration: 4538.000000000004}, 5: {Id: 5, Text: 'Je stupidní. Je hroznej. Vůbec se mi nelíbí.', Start: 62.364, Stop: 66.938, Words: [21, 22, 23, 24, 25, 26, 27], EN_Id: [5, 6], Duration: 4574.0000000000055}};
-        const czWords = {1: {Id: 1, Word: 'intersonic', count: '1', sentence: [1]}, 2: {Id: 2, Word: 'uvÁdÍ', count: '1', sentence: [1]}, 3: {Id: 3, Word: 'dobrý', count: '5', sentence: [2, 88, 162, 371, 830]}, 4: {Id: 4, Word: 'den', count: '5', sentence: [2, 88, 395, 706, 948]}, 5: {Id: 5, Word: 'já', count: '42', sentence: [2, 20, 59, 82, 159, 165, 170, 172, 220, 225, 249, 250, 285, 326, 337, 343, 352, 383, 393, 419, 436, 442, 460, 513, 520, 550, 552, 564, 575, 607, 612, 627, 700, 739, 741, 795, 796, 797, 934, 986, 990, 991]}};
-        const enSentences = {1: {Id: 1, Text: 'Hello.', Start: 45.667, Stop: 47.833, Words: [1], 6: '', CZ_Id: [2], Duration: 2165.999999999997}, 2: {Id: 2, Text: 'I am Andy...', Start: 47.958, Stop: 50.958, Words: [2, 3, 4], 6: '', CZ_Id: [2], Duration: 3000.0}, 3: {Id: 3, Text: 'and I would like to thank you for coming to my movie.', Start: 51.083, Stop: 54.75, Words: [5, 2, 6, 7, 8, 9, 10, 11, 12, 13, 14], 6: '', CZ_Id: [3], Duration: 3667.000000000002}, 4: {Id: 4, Text: 'I wish it was better, you know,', Start: 56.5, Stop: 60.542, Words: [2, 15, 16, 17, 18, 10, 19], 6: '', CZ_Id: [4], Duration: 4042.000000000002}, 5: {Id: 5, Text: 'but... it is so stupid.', Start: 60.625, Stop: 63.958, Words: [20, 16, 21, 22, 23], 6: '', CZ_Id: [5], Duration: 3332.999999999998}};
-        const enWords = {1: {Id: 1, Word: 'hello', count: '6', sentence: [1, 121, 185, 587, 655, 656]}, 2: {Id: 2, Word: 'i', count: '417', sentence: [2, 3, 4, 6, 12, 18, 23, 24, 28, 46, 47, 48, 49, 55, 70, 73, 76, 78, 80, 81, 82, 88, 97, 100, 104, 110, 111, 115, 116, 118, 121, 123, 132, 143, 144, 145, 146, 150, 151, 152, 158, 160, 161, 163, 166, 171, 173, 174, 175, 179, 189, 190, 198, 201, 202, 215, 237, 238, 239, 242, 252, 257, 266, 268, 273, 274, 275, 276, 277, 281, 282, 284, 287, 290, 294, 295, 296, 307, 319, 320, 330, 331, 332, 336, 337, 344, 347, 363, 364, 365, 370, 378, 383, 385, 403, 412, 416, 420, 428, 434, 438, 448, 461, 462, 463, 466, 468, 476, 482, 486, 487, 489, 490, 491, 493, 494, 495, 496, 497, 511, 512, 514, 519, 522, 523, 525, 526, 531, 536, 539, 546, 547, 549, 566, 568, 574, 575, 591, 595, 596, 598, 610, 615, 623, 624, 629, 630, 631, 632, 642, 644, 647, 651, 653, 654, 655, 657, 659, 664, 665, 666, 668, 675, 677, 678, 679, 684, 690, 691, 692, 701, 704, 708, 710, 713, 714, 715, 717, 718, 722, 723, 730, 737, 747, 763, 764, 770, 771, 774, 783, 784, 793, 796, 801, 804, 807, 816, 817, 819, 822, 823, 825, 830, 842, 843, 846, 847, 849, 850, 851, 852, 854, 861, 865, 867, 868, 869, 873, 874, 875, 877, 881, 882, 883, 884, 890, 898, 902, 910, 912, 916, 921, 922, 923, 930, 936, 937, 938, 939, 941, 943, 947, 948, 953, 958, 959, 961, 962, 963, 965, 967, 969, 971, 977, 980, 981, 983, 999, 1000, 1002, 1003, 1005, 1006, 1011, 1016, 1032, 1057, 1076, 1079, 1082, 1086, 1087, 1089, 1090, 1092, 1096, 1097, 1100, 1106, 1109, 1129, 1131, 1132, 1133, 1139, 1140, 1141, 1142, 1144, 1146, 1147, 1148, 1149, 1150, 1151, 1153, 1156, 1157, 1159, 1160, 1162, 1163, 1164, 1169, 1170, 1180, 1184, 1185, 1189, 1193, 1194, 1195, 1204, 1214, 1215, 1224, 1225, 1232, 1236, 1237, 1238, 1243, 1249, 1251, 1254, 1255, 1259, 1260, 1267, 1270, 1271, 1276, 1277, 1279, 1288, 1291, 1298, 1301, 1304, 1306, 1307, 1311, 1314, 1316, 1319, 1327, 1330, 1339, 1347, 1350, 1353, 1354, 1355, 1360, 1362, 1363, 1365, 1367, 1368, 1370, 1371, 1373, 1382, 1392, 1393, 1400, 1402, 1406, 1424, 1439, 1466, 1470, 1473, 1478, 1484, 1487, 1501, 1525, 1526, 1527, 1529, 1531, 1532, 1533, 1535, 1537, 1538, 1539, 1545, 1546, 1547, 1548, 1549, 1550, 1551, 1552, 1553, 1556, 1557, 1558, 1575, 1577, 1578, 1579, 1582, 1583, 1586, 1587, 1588, 1589, 1594, 1595, 1596, 1597, 1606, 1608, 1612]}, 3: {Id: 3, Word: 'am', count: '22', sentence: [2, 18, 110, 121, 146, 385, 496, 526, 615, 807, 816, 818, 890, 937, 938, 953, 1086, 1353, 1360, 1371, 1466, 1470]}, 4: {Id: 4, Word: 'andy', count: '99', sentence: [2, 37, 42, 48, 53, 68, 70, 177, 180, 191, 209, 231, 242, 266, 394, 395, 398, 399, 432, 436, 450, 459, 475, 476, 478, 481, 483, 569, 575, 582, 604, 605, 644, 646, 649, 653, 655, 656, 658, 660, 662, 664, 678, 679, 701, 703, 737, 749, 815, 835, 905, 920, 964, 978, 1015, 1025, 1050, 1051, 1054, 1091, 1102, 1122, 1130, 1131, 1137, 1173, 1177, 1196, 1202, 1206, 1215, 1221, 1234, 1253, 1255, 1265, 1286, 1309, 1323, 1337, 1343, 1357, 1358, 1379, 1380, 1402, 1412, 1465, 1466, 1467, 1471, 1479, 1519, 1520, 1521, 1522, 1561, 1564, 1566]}, 5: {Id: 5, Word: 'and', count: '184', sentence: [3, 8, 25, 28, 32, 36, 40, 52, 53, 55, 58, 59, 61, 63, 64, 65, 66, 67, 74, 79, 102, 104, 123, 153, 161, 166, 167, 197, 208, 239, 240, 249, 251, 256, 259, 267, 269, 270, 290, 291, 295, 301, 308, 311, 315, 318, 321, 322, 356, 368, 369, 382, 395, 396, 414, 415, 423, 425, 440, 466, 493, 494, 495, 496, 497, 501, 516, 523, 530, 536, 541, 559, 569, 580, 607, 613, 629, 635, 645, 708, 755, 756, 782, 783, 814, 819, 821, 843, 844, 854, 873, 876, 877, 882, 885, 917, 920, 939, 942, 943, 944, 947, 948, 950, 967, 969, 975, 980, 983, 991, 996, 1019, 1023, 1026, 1047, 1053, 1061, 1066, 1067, 1068, 1072, 1079, 1104, 1138, 1150, 1191, 1192, 1194, 1195, 1216, 1217, 1226, 1252, 1257, 1264, 1269, 1271, 1293, 1295, 1310, 1320, 1324, 1338, 1354, 1358, 1361, 1367, 1369, 1372, 1376, 1382, 1394, 1421, 1424, 1428, 1429, 1431, 1434, 1438, 1440, 1442, 1445, 1447, 1450, 1453, 1455, 1456, 1458, 1470, 1473, 1496, 1498, 1510, 1518, 1523, 1531, 1532, 1533, 1546, 1559, 1561, 1562, 1592, 1593]}};
+        var optSentences = document.getElementById("select_sentence_en");
+        var lastWord = "";
+        const czSentence = {
+            1: {
+                Id: 1,
+                Text: 'INTERSONIC UVÁDÍ',
+                Start: 5.906,
+                Stop: 11.061,
+                Words: [1, 2],
+                EN_Id: [0],
+                Duration: 5155.0
+            },
+            2: {
+                Id: 2,
+                Text: 'Dobrý den. Já jsem Andy.',
+                Start: 45.406,
+                Stop: 49.898,
+                Words: [3, 4, 5, 6, 7],
+                EN_Id: [1, 2],
+                Duration: 4492.000000000005
+            },
+            3: {
+                Id: 3,
+                Text: 'Děkuju vám, že jste přišli na můj film.',
+                Start: 50.906,
+                Stop: 54.485,
+                Words: [8, 9, 10, 11, 12, 13, 14, 15],
+                EN_Id: [3],
+                Duration: 3579.0000000000005
+            },
+            4: {
+                Id: 4,
+                Text: 'Škoda, že není lepší. To víte...',
+                Start: 56.281,
+                Stop: 60.819,
+                Words: [16, 10, 17, 18, 19, 20],
+                EN_Id: [4],
+                Duration: 4538.000000000004
+            },
+            5: {
+                Id: 5,
+                Text: 'Je stupidní. Je hroznej. Vůbec se mi nelíbí.',
+                Start: 62.364,
+                Stop: 66.938,
+                Words: [21, 22, 23, 24, 25, 26, 27],
+                EN_Id: [5, 6],
+                Duration: 4574.0000000000055
+            }
+        };
+        const czWords = {
+            1: {
+                Id: 1,
+                Word: 'intersonic',
+                count: '1',
+                sentence: [1]
+            },
+            2: {
+                Id: 2,
+                Word: 'uvÁdÍ',
+                count: '1',
+                sentence: [1]
+            },
+            3: {
+                Id: 3,
+                Word: 'dobrý',
+                count: '5',
+                sentence: [2, 88, 162, 371, 830]
+            },
+            4: {
+                Id: 4,
+                Word: 'den',
+                count: '5',
+                sentence: [2, 88, 395, 706, 948]
+            },
+            5: {
+                Id: 5,
+                Word: 'já',
+                count: '42',
+                sentence: [2, 20, 59, 82, 159, 165, 170, 172, 220, 225, 249, 250, 285, 326, 337, 343, 352, 383, 393, 419, 436, 442, 460, 513, 520, 550, 552, 564, 575, 607, 612, 627, 700, 739, 741, 795, 796, 797, 934, 986, 990, 991]
+            }
+        };
+        const enSentences = {
+            1: {
+                Id: 1,
+                Text: 'Hello.',
+                Start: 45.667,
+                Stop: 47.833,
+                Words: [1],
+                6: '',
+                CZ_Id: [2],
+                Duration: 2165.999999999997,
+                selected: false
+            },
+            2: {
+                Id: 2,
+                Text: 'I am Andy...',
+                Start: 47.958,
+                Stop: 50.958,
+                Words: [2, 3, 4],
+                6: '',
+                CZ_Id: [2],
+                Duration: 3000.0,
+                selected: false
+            },
+            3: {
+                Id: 3,
+                Text: 'and I would like to thank you for coming to my movie.',
+                Start: 51.083,
+                Stop: 54.75,
+                Words: [5, 2, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+                6: '',
+                CZ_Id: [3],
+                Duration: 3667.000000000002,
+                selected: false
+            },
+            4: {
+                Id: 4,
+                Text: 'I wish it was better, you know,',
+                Start: 56.5,
+                Stop: 60.542,
+                Words: [2, 15, 16, 17, 18, 10, 19],
+                6: '',
+                CZ_Id: [4],
+                Duration: 4042.000000000002,
+                selected: false
+            },
+            5: {
+                Id: 5,
+                Text: 'but... it is so stupid.',
+                Start: 60.625,
+                Stop: 63.958,
+                Words: [20, 16, 21, 22, 23],
+                6: '',
+                CZ_Id: [5],
+                Duration: 3332.999999999998,
+                selected: false
+            }
+        };
+        const enWords = {
+            1: {
+                Id: 1,
+                Word: 'hello',
+                count: '6',
+                sentence: [1, 3],
+                selectedSentence: {},
+                selected: false
+            },
+            2: {
+                Id: 2,
+                Word: 'i',
+                count: '417',
+                sentence: [2],
+                selectedSentence: {},
+                selected: false
+            },
+            3: {
+                Id: 3,
+                Word: 'am',
+                count: '22',
+                sentence: [2, 4],
+                selectedSentence: {},
+                selected: false
+            },
+            4: {
+                Id: 4,
+                Word: 'andy',
+                count: '99',
+                sentence: [3, 5],
+                selectedSentence: {},
+                selected: false
+            },
+            5: {
+                Id: 5,
+                Word: 'and',
+                count: '184',
+                sentence: [3],
+                selectedSentence: {},
+                selected: false
+            }
+        };
 
 
         var aria = aria || {};
-        var word = {}
+        var word = {};
+        var sentenceList = {};
+        var selectedWord = {};
         aria.Listbox = function(listboxNode) {
             this.listboxNode = listboxNode;
 
@@ -86,21 +264,73 @@
             document.getElementById("demo").innerHTML = Date();
         }
 
-        function selecteItem() {
+        function selecteSentence() {
+            var selObj = document.getElementById("select_sentence_en");
+            aria.id = document.getElementById("select_sentence_en").value;
 
+            var idElement = parseInt(aria.id);
+            var selectedIdElement = idElement - 1;
+            var word_selected = selObj[selectedIdElement].getAttribute("word_selected");
+            var sentenceId = selObj[selectedIdElement].getAttribute("idElement");
+            var selectedSentence = enSentences[sentenceId]
+
+            if (word_selected == 'true') {
+                selObj[selectedIdElement].setAttribute("word_selected", "false");
+                delete sentenceList[idElement];
+                selectedSentence.selected = false;
+
+            } else {
+                selObj[selectedIdElement].setAttribute("word_selected", "true");
+                sentenceList[idElement] = {};
+                selectedSentence.selected = true;
+            }
+
+        }
+
+        function selecteItem() {
 
             var selObj = document.getElementById("select_word_en");
             aria.id = document.getElementById("select_word_en").value;
-            var word_selected = selObj[aria.id].getAttribute("word_selected");
-            var ss = enSentences[aria.id]
-            if (word_selected == 'true') {
-                selObj[aria.id].setAttribute("word_selected", "false");
-                delete word[aria.id];
-            } else {
-                selObj[aria.id].setAttribute("word_selected", "true");
-                word[aria.id] = TimeList[aria.id];
+            var idElement = parseInt(aria.id);
+            var selectedIdElement = idElement - 1;
+            var word_selected = selObj[selectedIdElement].getAttribute("word_selected");
+            selectedWord = enWords[idElement]
 
+            // clear senetnecs box
+            var optDefault = optSentences.options[0]
+            while (optSentences.childElementCount > 0) {
+                optSentences.options.remove(0);
             }
+
+            // add sentences 
+            valueCounter = 1;
+            for (element of selectedWord.sentence) {
+                var sentenceAdding = enSentences[element];
+                var opt = document.createElement("option");
+                opt.text = sentenceAdding.Text
+                opt.setAttribute("role", "word");
+                opt.setAttribute("word_selected", sentenceAdding.selected);
+                opt.setAttribute("IdElement", sentenceAdding.Id);
+                opt.setAttribute("value", valueCounter);
+                valueCounter += 1;
+                optSentences.options.add(opt);
+            };
+
+            if (lastWord != selectedWord.Word) {
+                lastWord = selectedWord.Word
+            } else {
+                if (word_selected == 'true') {
+                    selObj[selectedIdElement].setAttribute("word_selected", "false");
+                    delete word[selectedIdElement];
+                    selectedWord.selected = false;
+                } else {
+                    selObj[selectedIdElement].setAttribute("word_selected", "true");
+                    word[selectedIdElement] = {};
+                    selectedWord.selected = true;
+                }
+            }
+
+
 
 
             //document.getElementById("select_sentence_en").options.add(selObj[aria.id]);  
