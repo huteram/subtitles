@@ -283,10 +283,10 @@
                 if (sentenceAdding.selected == true) {
                     var opt = document.createElement("option");
                     opt.text = sentenceAdding.Text
-                    opt.setAttribute("role", "word");
-                    opt.setAttribute("word_selected", sentenceAdding.selected);
-                    opt.setAttribute("IdElement", sentenceAdding.Id);
-                    opt.setAttribute("value", valueCounter);
+                    opt.role = "word";
+                    opt.IdElement = sentenceAdding.Id;
+                    opt.word_selected = sentenceAdding.selected;
+                    opt.value = valueCounter;
                     valueCounter += 1;
                     optSentences.options.add(opt);
                 };
@@ -296,11 +296,11 @@
                 for (element of selectedWord.sentence) {
                     var sentenceAdding = enSentences[element];
                     var opt = document.createElement("option");
-                    opt.text = sentenceAdding.Text
-                    opt.setAttribute("role", "word");
-                    opt.setAttribute("word_selected", sentenceAdding.selected);
-                    opt.setAttribute("IdElement", sentenceAdding.Id);
-                    opt.setAttribute("value", valueCounter);
+                    opt.text = sentenceAdding.Text;
+                    opt.role = "word";
+                    opt.IdElement = sentenceAdding.Id;
+                    opt.word_selected = sentenceAdding.selected;
+                    opt.value = valueCounter;
                     valueCounter += 1;
                     optSentences.options.add(opt);
                 }
@@ -310,6 +310,8 @@
             // random sentence
             var valuesSen = Object.values(enSentences);
             var selectSen = document.getElementById('select_sentence_en');
+            var IdElement = selectSen.options[index]
+            var selectedSentence = enSentences[IdElement.IdElement]
             selectSen.selectedIndex = index;
         }
 
