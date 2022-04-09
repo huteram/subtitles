@@ -10,6 +10,9 @@
 </head>
 
 <body>
+
+
+
     <header class="sticky row">
         <div class="col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
             <img src="mh.png" alt="logo" style="width: 50px; float: left; border-radius: 50%;">
@@ -21,13 +24,17 @@
         <!-- Video -->
         <div class="row">
             <div class="col-sm-12 col-md-10 col-lg-6 col-md-offset-1 col-lg-offset-3">
-                <p>&nbsp;</p>
-                <video id="myvideo" width="100%">
-					<source src="file:../avi/Avatar.mkv">
-					<p>Your browser does not support this video format.</p>
-				</video>
-                <p>Avatar.mkv</p>
-                <a href="#" id="randomSelect" onclick="selectRandomWord()">Select random</a>
+
+                <video id="myvideo" width="500px" ; class="center">
+                    <source src="..\\avi\\Man.On.The.Moon.mp4">
+                    <p>Your browser does not support this video format.</p>
+                  </video>
+                <p></p>
+                <button onclick="settime()">Play video!</button>
+                <button onclick="stopFilm()">Stop!</button>
+                <button onclick="selectRandomWord()">Random selection</button>
+                <input type="file" id="videoFile" name="videoFile" accept="video/*">
+                <div id="CZSentence">CZSentence</div>
             </div>
         </div>
         <!-- Listboxes -->
@@ -72,7 +79,11 @@
     <script type="text/javascript">
         var optSentences = document.getElementById("select_sentence_en");
         var lastWord = "";
-        const czSentence = {
+        var TimeSelector = {
+            Start: 0,
+            Stop: 10,
+        }
+        const czSentences = {
             1: {
                 Id: 1,
                 Text: 'INTERSONIC UVÁDÍ',
@@ -262,23 +273,43 @@
 
         };
 
-        function selectRandomWord() {
-            var select = document.getElementById('select_word_en');
-            var index = Math.floor(Math.random() * word.length);
-            const values = Object.values(word);
-            const randomValue = values[parseInt(Math.random() * values.length)];
-            var selectedWord = enWords[randomValue.index + 1];
 
-            select.selectedIndex = randomValue.index;
+        const input = document.querySelector('input');
+        input.addEventListener('change', updateImageDisplay);
 
-            // clear senetnecs box
-            var optDefault = optSentences.options[0]
-            while (optSentences.childElementCount > 0) {
-                optSentences.options.remove(0);
+        function updateImageDisplay() {
+            const curFiles = input.files;
+            const VideoElement = document.getElementById("myvideo");
+            for (const file of curFiles) {
+                VideoElement.src = URL.createObjectURL(file);
             }
-            // add sentences 
+
+        }
+
+        function stopFilm() {
+            var video = document.getElementById("myvideo");
+            video.pause();
+        }
+
+        function settime() {
+            var video = document.getElementById("myvideo");
+            var Duration = (TimeSelector.Stop - TimeSelector.Start) * 1000
+            video.currentTime = TimeSelector.Start;
+            video.play();
+            console.log(video.currentTime);
+            setInterval(function() {
+
+                if (video.currentTime > TimeSelector.Stop) {
+
+                    video.pause();
+                }
+            }, Duration);
+        }
+
+
+        function showSelectedSentences(sentenceList) {
             var valueCounter = 1;
-            for (element of selectedWord.sentence) {
+            for (element of sentenceList) {
                 var sentenceAdding = enSentences[element];
                 if (sentenceAdding.selected == true) {
                     var opt = document.createElement("option");
@@ -293,26 +324,97 @@
 
             };
             if (valueCounter == 1) {
-                for (element of selectedWord.sentence) {
-                    var sentenceAdding = enSentences[element];
-                    var opt = document.createElement("option");
-                    opt.text = sentenceAdding.Text;
-                    opt.role = "word";
-                    opt.IdElement = sentenceAdding.Id;
-                    opt.word_selected = sentenceAdding.selected;
-                    opt.value = valueCounter;
-                    valueCounter += 1;
-                    optSentences.options.add(opt);
-                }
+                showSentences(sentenceList)
             };
+        }
 
-            index = Math.floor(Math.random() * (valueCounter - 1));
+        function showSentences(sentenceList) {
+            for (element of sentenceList) {
+                var sentenceAdding = enSentences[element];
+                var opt = document.createElement("option");
+                opt.text = sentenceAdding.Text;
+                opt.role = "word";
+                opt.IdElement = sentenceAdding.Id;
+                opt.word_selected = sentenceAdding.selected;
+                opt.value = valueCounter;
+                valueCounter += 1;
+                optSentences.options.add(opt);
+            }
+
+        }
+
+        function selectRandomSentence() {
+            var selectSen = document.getElementById('select_sentence_en');
+            var index = Math.floor(Math.random() * (selectSen.length - 1));
             // random sentence
             var valuesSen = Object.values(enSentences);
-            var selectSen = document.getElementById('select_sentence_en');
             var IdElement = selectSen.options[index]
-            var selectedSentence = enSentences[IdElement.IdElement]
+            var selectedSentence = enSentences[IdElement.value]
+            var czText = ""
+            var czTextPart = ""
+            TimeSelector.Start = 999999999999999
+            TimeSelector.Stop = 0
+            for (element of selectedSentence.CZ_Id) {
+                czTextPart = czSentences[element]
+                czText += czTextPart.Text + " "
+                TimeSelector.Stop = Math.max(czSentences[element].Stop, TimeSelector.Stop)
+                TimeSelector.Start = Math.min(czSentences[element].Start, TimeSelector.Start)
+            }
+            TimeSelector.Stop = selectedSentence.Stop;
+            TimeSelector.Start = selectedSentence.Start;
+
+            CZSentence.innerHTML = czText;
             selectSen.selectedIndex = index;
+            settime();
+
+        }
+
+        function selectRandomWord() {
+            if (Object.keys(word).length == 0) {
+                selectRandomSentence()
+            } else {
+                var select = document.getElementById('select_word_en');
+                var index = Math.floor(Math.random() * word.length);
+                const values = Object.values(word);
+                const randomValue = values[parseInt(Math.random() * values.length)];
+                var selectedWord = enWords[randomValue.index + 1];
+
+                select.selectedIndex = randomValue.index;
+
+                // clear senetnecs box
+                var optDefault = optSentences.options[0]
+                while (optSentences.childElementCount > 0) {
+                    optSentences.options.remove(0);
+                }
+                // add sentences 
+                showSelectedSentences(selectedWord.sentence)
+                index = Math.floor(Math.random() * (valueCounter - 1));
+
+                // random sentence
+                var valuesSen = Object.values(enSentences);
+                var selectSen = document.getElementById('select_sentence_en');
+                var IdElement = selectSen.options[index]
+                var selectedSentence = enSentences[IdElement.IdElement]
+                var CzSentence = document.getElementById("CZSentence");
+                var czText = ""
+                var czTextPart = ""
+                TimeSelector.Start = 999999999999999
+                TimeSelector.Stop = 0
+                for (element of selectedSentence.CZ_Id) {
+                    czTextPart = czSentences[element]
+                    czText += czTextPart.Text + " "
+                    TimeSelector.Stop = Math.max(czSentences[element].Stop, TimeSelector.Stop)
+                    TimeSelector.Start = Math.min(czSentences[element].Start, TimeSelector.Start)
+                }
+                TimeSelector.Stop = selectedSentence.Stop;
+                TimeSelector.Start = selectedSentence.Start;
+
+                CZSentence.innerHTML = czText;
+                selectSen.selectedIndex = index;
+                settime();
+
+            }
+
         }
 
 

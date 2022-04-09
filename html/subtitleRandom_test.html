@@ -22,7 +22,6 @@
 
 
     <button onclick="settime()">Play video!</button>
-    <button onclick="videoSelection()">select video!</button>
 
     <label for="videoFile">Choose a profile picture:</label>
 
@@ -50,6 +49,8 @@
 
 
         var Selector = 0;
+
+
         const TimeList = [{
                 word: 'his',
                 EN_sentence: "Andy's up in his room? ",
@@ -264,17 +265,11 @@
             CZSentence.innerHTML = TimeList[Selector].CZ_sentence
         }
 
-        function videoSelection() {
-            var video = document.getElementById("myvideo");
-            var selector = document.getElementById("videoFile");
-            var CzSentence = document.getElementById("CZSentence");
-            video.src = selector.files[0];
-            CZSentence.innerHTML = selector.files[0].name;
 
-        }
 
         function settime() {
             var video = document.getElementById("myvideo");
+
             video.currentTime = TimeList[Selector].Start;
             video.play();
             console.log(video.currentTime);
