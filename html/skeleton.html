@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <title>Learn Languages from Subtitles</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8" />
@@ -30,11 +31,14 @@
                     <p>Your browser does not support this video format.</p>
                   </video>
                 <p></p>
+                <p><input type="file" id="videoFile" name="videoFile" accept="video/*"></p>
                 <button onclick="settime()">Play video!</button>
                 <button onclick="stopFilm()">Stop!</button>
                 <button onclick="selectRandomWord()">Random selection</button>
-                <input type="file" id="videoFile" name="videoFile" accept="video/*">
-                <div id="CZSentence">CZSentence</div>
+                <button onclick="showAllSelected()">Selected</button>
+                <button onclick="showAllSentences()">All</button>
+                <input type="checkbox" id="selectionMode">Selection Mode</input>
+                <div id="CZSentence">Translation</div>
             </div>
         </div>
         <!-- Listboxes -->
@@ -310,13 +314,14 @@
         function showSelectedSentences(sentenceList) {
             var valueCounter = 1;
             for (element of sentenceList) {
+
                 var sentenceAdding = enSentences[element];
                 if (sentenceAdding.selected == true) {
                     var opt = document.createElement("option");
                     opt.text = sentenceAdding.Text
-                    opt.role = "word";
-                    opt.IdElement = sentenceAdding.Id;
-                    opt.word_selected = sentenceAdding.selected;
+                    opt.setAttribute("role", "word");
+                    opt.setAttribute("word_selected", sentenceAdding.selected);
+                    opt.setAttribute("IdElement", sentenceAdding.Id);
                     opt.value = valueCounter;
                     valueCounter += 1;
                     optSentences.options.add(opt);
@@ -329,13 +334,14 @@
         }
 
         function showSentences(sentenceList) {
+            var valueCounter = 1;
             for (element of sentenceList) {
                 var sentenceAdding = enSentences[element];
                 var opt = document.createElement("option");
                 opt.text = sentenceAdding.Text;
-                opt.role = "word";
-                opt.IdElement = sentenceAdding.Id;
-                opt.word_selected = sentenceAdding.selected;
+                opt.setAttribute("role", "word");
+                opt.setAttribute("word_selected", sentenceAdding.selected);
+                opt.setAttribute("IdElement", sentenceAdding.Id);
                 opt.value = valueCounter;
                 valueCounter += 1;
                 optSentences.options.add(opt);
@@ -343,30 +349,58 @@
 
         }
 
+        function clearSentence() {
+            var optDefault = optSentences.options[0]
+            while (optSentences.childElementCount > 0) {
+                optSentences.options.remove(0);
+            }
+        }
+
+        function showAllSentences() {
+            var sentenceLength = Object.keys(enSentences).length;
+            var arrayRange = Array.from({
+                length: sentenceLength
+            }, (_, i) => i + 1);
+            clearSentence();
+            showSentences(arrayRange);
+        }
+
+        function showAllSelected() {
+            var sentenceLength = Object.keys(enSentences).length;
+            var arrayRange = Array.from({
+                length: sentenceLength
+            }, (_, i) => i + 1);
+            clearSentence();
+            showSelectedSentences(arrayRange);
+        }
+
+        function setTranslation(Text) {
+            var CzSentence = document.getElementById("CZSentence");
+            CZSentence.innerHTML = Text;
+        }
+
+        function selectTranslation(listId) {
+            var czText = ""
+            for (element of listId) {
+                czText += czSentences[element].Text + " "
+            }
+            return czText
+        }
+
         function selectRandomSentence() {
             var selectSen = document.getElementById('select_sentence_en');
-            var index = Math.floor(Math.random() * (selectSen.length - 1));
+            var index = Math.floor(Math.random() * (selectSen.length));
+            selectSen.selectedIndex = index;
+
             // random sentence
             var valuesSen = Object.values(enSentences);
-            var IdElement = selectSen.options[index]
-            var selectedSentence = enSentences[IdElement.value]
-            var czText = ""
-            var czTextPart = ""
-            TimeSelector.Start = 999999999999999
-            TimeSelector.Stop = 0
-            for (element of selectedSentence.CZ_Id) {
-                czTextPart = czSentences[element]
-                czText += czTextPart.Text + " "
-                TimeSelector.Stop = Math.max(czSentences[element].Stop, TimeSelector.Stop)
-                TimeSelector.Start = Math.min(czSentences[element].Start, TimeSelector.Start)
-            }
+            var IdElement = selectSen.options[index].getAttribute("IdElement")
+            var selectedSentence = enSentences[IdElement]
+            var czText = selectTranslation(selectedSentence.CZ_Id)
             TimeSelector.Stop = selectedSentence.Stop;
             TimeSelector.Start = selectedSentence.Start;
-
-            CZSentence.innerHTML = czText;
-            selectSen.selectedIndex = index;
+            setTranslation(czText);
             settime();
-
         }
 
         function selectRandomWord() {
@@ -374,6 +408,7 @@
                 selectRandomSentence()
             } else {
                 var select = document.getElementById('select_word_en');
+                var selectSen = document.getElementById('select_sentence_en');
                 var index = Math.floor(Math.random() * word.length);
                 const values = Object.values(word);
                 const randomValue = values[parseInt(Math.random() * values.length)];
@@ -388,29 +423,17 @@
                 }
                 // add sentences 
                 showSelectedSentences(selectedWord.sentence)
-                index = Math.floor(Math.random() * (valueCounter - 1));
+                index = Math.floor(Math.random() * (optSentences.length));
+                selectSen.selectedIndex = index;
 
                 // random sentence
                 var valuesSen = Object.values(enSentences);
-                var selectSen = document.getElementById('select_sentence_en');
-                var IdElement = selectSen.options[index]
-                var selectedSentence = enSentences[IdElement.IdElement]
-                var CzSentence = document.getElementById("CZSentence");
-                var czText = ""
-                var czTextPart = ""
-                TimeSelector.Start = 999999999999999
-                TimeSelector.Stop = 0
-                for (element of selectedSentence.CZ_Id) {
-                    czTextPart = czSentences[element]
-                    czText += czTextPart.Text + " "
-                    TimeSelector.Stop = Math.max(czSentences[element].Stop, TimeSelector.Stop)
-                    TimeSelector.Start = Math.min(czSentences[element].Start, TimeSelector.Start)
-                }
-                TimeSelector.Stop = selectedSentence.Stop;
+                var IdElement = selectSen.options[index].getAttribute("IdElement")
+                var selectedSentence = enSentences[IdElement]
+                var czText = selectTranslation(selectedSentence.CZ_Id)
                 TimeSelector.Start = selectedSentence.Start;
-
-                CZSentence.innerHTML = czText;
-                selectSen.selectedIndex = index;
+                TimeSelector.Stop = selectedSentence.Stop;
+                setTranslation(czText);
                 settime();
 
             }
@@ -418,29 +441,36 @@
         }
 
 
-        function displayDate() {
-            document.getElementById("demo").innerHTML = Date();
-        }
 
         function selecteSentence() {
             var selObj = document.getElementById("select_sentence_en");
+            var selMode = document.getElementById("selectionMode").checked;
             aria.id = document.getElementById("select_sentence_en").value;
 
             var idElement = parseInt(aria.id);
             var selectedIdElement = idElement - 1;
             var word_selected = selObj[selectedIdElement].getAttribute("word_selected");
-            var sentenceId = selObj[selectedIdElement].getAttribute("idElement");
+            var sentenceId = selObj[selectedIdElement].getAttribute("IdElement");
             var selectedSentence = enSentences[sentenceId]
+            var czText = selectTranslation(selectedSentence.CZ_Id)
+            setTranslation(czText);
 
-            if (word_selected == 'true') {
-                selObj[selectedIdElement].setAttribute("word_selected", "false");
-                delete sentenceList[idElement];
-                selectedSentence.selected = false;
+            if (selMode == true) {
+                if (word_selected == 'true') {
+                    selObj[selectedIdElement].setAttribute("word_selected", "false");
+                    delete sentenceList[idElement];
+                    selectedSentence.selected = false;
 
+                } else {
+                    selObj[selectedIdElement].setAttribute("word_selected", "true");
+                    sentenceList[idElement] = selectedSentence;
+                    selectedSentence.selected = true;
+                };
             } else {
-                selObj[selectedIdElement].setAttribute("word_selected", "true");
-                sentenceList[idElement] = selectedSentence;
-                selectedSentence.selected = true;
+                TimeSelector.Stop = selectedSentence.Stop;
+                TimeSelector.Start = selectedSentence.Start;
+                settime();
+
             }
 
         }
@@ -469,7 +499,7 @@
                 opt.setAttribute("role", "word");
                 opt.setAttribute("word_selected", sentenceAdding.selected);
                 opt.setAttribute("IdElement", sentenceAdding.Id);
-                opt.setAttribute("value", valueCounter);
+                opt.value = valueCounter;
                 valueCounter += 1;
                 optSentences.options.add(opt);
             };
