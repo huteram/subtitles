@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <title>Learn Languages from Subtitles</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8" />
@@ -10,6 +11,9 @@
 </head>
 
 <body>
+
+
+
     <header class="sticky row">
         <div class="col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
             <img src="mh.png" alt="logo" style="width: 50px; float: left; border-radius: 50%;">
@@ -21,12 +25,20 @@
         <!-- Video -->
         <div class="row">
             <div class="col-sm-12 col-md-10 col-lg-6 col-md-offset-1 col-lg-offset-3">
-                <p>&nbsp;</p>
-                <video id="myvideo" width="100%">
-					<source src="file:../avi/Avatar.mkv">
-					<p>Your browser does not support this video format.</p>
-				</video>
-                <p>Avatar.mkv</p>
+
+                <video id="myvideo" width="500px" ; class="center">
+                    <source src="..\\avi\\Man.On.The.Moon.mp4">
+                    <p>Your browser does not support this video format.</p>
+                  </video>
+                <p></p>
+                <p><input type="file" id="videoFile" name="videoFile" accept="video/*"></p>
+                <button onclick="settime()">Play video!</button>
+                <button onclick="stopFilm()">Stop!</button>
+                <button onclick="selectRandomWord()">Random selection</button>
+                <button onclick="showAllSelected()">Selected</button>
+                <button onclick="showAllSentences()">All</button>
+                <input type="checkbox" id="selectionMode">Selection Mode</input>
+                <div id="CZSentence">Translation</div>
             </div>
         </div>
         <!-- Listboxes -->
@@ -35,15 +47,14 @@
             <div class="col-sm-12 col-md-3 col-lg-2 col-md-first col-sm-last">
                 <h2>Words</h2>
                 <select id="select_word_en" size="10" style="width:100%" onclick="selecteItem()">
-					<!-- will be filling by JS -->XXXoptionWord
+					XXXoptionWord
 				</select>
             </div>
 
             <div class="col-sm-12 col-md-9 col-lg-10">
                 <h2>Sentences</h2>
-                <select id="select_sentence_en" role="listbox" size="10" style="width:100%">
-					<!-- will be filling by JS -->XXXoptionSentence
-
+                <select id="select_sentence_en" role="listbox" size="10" style="width:100%" onclick="selecteSentence()">
+					XXXoptionSentence
 				</select>
             </div>
         </div>
@@ -59,38 +70,269 @@
     </footer>
 
     <script type="text/javascript">
-        const czSentence = XXXczSentence;
+        const czSentences = XXXczSentence;
         const czWords = XXXczWords;
         const enSentences = XXXenSentence;
         const enWords = XXXenWords;
-
+        var optSentences = document.getElementById("select_sentence_en");
+        var lastWord = "";
+        var TimeSelector = {
+            Start: 0,
+            Stop: 10,
+        }
 
         var aria = aria || {};
-        var word = {}
+        var word = {};
+        var wordList = [];
+        var sentenceList = {};
+        var selectedWord = {};
         aria.Listbox = function(listboxNode) {
             this.listboxNode = listboxNode;
 
         };
 
-        function displayDate() {
-            document.getElementById("demo").innerHTML = Date();
+
+        const input = document.querySelector('input');
+        input.addEventListener('change', updateImageDisplay);
+
+        function updateImageDisplay() {
+            const curFiles = input.files;
+            const VideoElement = document.getElementById("myvideo");
+            for (const file of curFiles) {
+                VideoElement.src = URL.createObjectURL(file);
+            }
+
+        }
+
+        function stopFilm() {
+            var video = document.getElementById("myvideo");
+            video.pause();
+        }
+
+        function settime() {
+            var video = document.getElementById("myvideo");
+            var Duration = (TimeSelector.Stop - TimeSelector.Start) * 1000
+            video.currentTime = TimeSelector.Start;
+            video.play();
+            console.log(video.currentTime);
+            setInterval(function() {
+
+                if (video.currentTime > TimeSelector.Stop) {
+
+                    video.pause();
+                }
+            }, Duration);
+        }
+
+
+        function showSelectedSentences(sentenceList) {
+            var valueCounter = 1;
+            for (element of sentenceList) {
+
+                var sentenceAdding = enSentences[element];
+                if (sentenceAdding.selected == true) {
+                    var opt = document.createElement("option");
+                    opt.text = sentenceAdding.Text
+                    opt.setAttribute("role", "word");
+                    opt.setAttribute("word_selected", sentenceAdding.selected);
+                    opt.setAttribute("IdElement", sentenceAdding.Id);
+                    opt.value = valueCounter;
+                    valueCounter += 1;
+                    optSentences.options.add(opt);
+                };
+
+            };
+            if (valueCounter == 1) {
+                showSentences(sentenceList)
+            };
+        }
+
+        function showSentences(sentenceList) {
+            var valueCounter = 1;
+            for (element of sentenceList) {
+                var sentenceAdding = enSentences[element];
+                var opt = document.createElement("option");
+                opt.text = sentenceAdding.Text;
+                opt.setAttribute("role", "word");
+                opt.setAttribute("word_selected", sentenceAdding.selected);
+                opt.setAttribute("IdElement", sentenceAdding.Id);
+                opt.value = valueCounter;
+                valueCounter += 1;
+                optSentences.options.add(opt);
+            }
+
+        }
+
+        function clearSentence() {
+            var optDefault = optSentences.options[0]
+            while (optSentences.childElementCount > 0) {
+                optSentences.options.remove(0);
+            }
+        }
+
+        function showAllSentences() {
+            var sentenceLength = Object.keys(enSentences).length;
+            var arrayRange = Array.from({
+                length: sentenceLength
+            }, (_, i) => i + 1);
+            clearSentence();
+            showSentences(arrayRange);
+        }
+
+        function showAllSelected() {
+            var sentenceLength = Object.keys(enSentences).length;
+            var arrayRange = Array.from({
+                length: sentenceLength
+            }, (_, i) => i + 1);
+            clearSentence();
+            showSelectedSentences(arrayRange);
+        }
+
+        function setTranslation(Text) {
+            var CzSentence = document.getElementById("CZSentence");
+            CZSentence.innerHTML = Text;
+        }
+
+        function selectTranslation(listId) {
+            var czText = ""
+            for (element of listId) {
+                czText += czSentences[element].Text + " "
+            }
+            return czText
+        }
+
+        function selectRandomSentence() {
+            var selectSen = document.getElementById('select_sentence_en');
+            var index = Math.floor(Math.random() * (selectSen.length));
+            selectSen.selectedIndex = index;
+
+            // random sentence
+            var valuesSen = Object.values(enSentences);
+            var IdElement = selectSen.options[index].getAttribute("IdElement")
+            var selectedSentence = enSentences[IdElement]
+            var czText = selectTranslation(selectedSentence.CZ_Id)
+            TimeSelector.Stop = selectedSentence.Stop;
+            TimeSelector.Start = selectedSentence.Start;
+            setTranslation(czText);
+            settime();
+        }
+
+        function selectRandomWord() {
+            if (Object.keys(word).length == 0) {
+                selectRandomSentence()
+            } else {
+                var select = document.getElementById('select_word_en');
+                var selectSen = document.getElementById('select_sentence_en');
+                var index = Math.floor(Math.random() * word.length);
+                const values = Object.values(word);
+                const randomValue = values[parseInt(Math.random() * values.length)];
+                var selectedWord = enWords[randomValue.index + 1];
+
+                select.selectedIndex = randomValue.index;
+
+                // clear senetnecs box
+                var optDefault = optSentences.options[0]
+                while (optSentences.childElementCount > 0) {
+                    optSentences.options.remove(0);
+                }
+                // add sentences 
+                showSelectedSentences(selectedWord.sentence)
+                index = Math.floor(Math.random() * (optSentences.length));
+                selectSen.selectedIndex = index;
+
+                // random sentence
+                var valuesSen = Object.values(enSentences);
+                var IdElement = selectSen.options[index].getAttribute("IdElement")
+                var selectedSentence = enSentences[IdElement]
+                var czText = selectTranslation(selectedSentence.CZ_Id)
+                TimeSelector.Start = selectedSentence.Start;
+                TimeSelector.Stop = selectedSentence.Stop;
+                setTranslation(czText);
+                settime();
+
+            }
+
+        }
+
+
+
+        function selecteSentence() {
+            var selObj = document.getElementById("select_sentence_en");
+            var selMode = document.getElementById("selectionMode").checked;
+            aria.id = document.getElementById("select_sentence_en").value;
+
+            var idElement = parseInt(aria.id);
+            var selectedIdElement = idElement - 1;
+            var word_selected = selObj[selectedIdElement].getAttribute("word_selected");
+            var sentenceId = selObj[selectedIdElement].getAttribute("IdElement");
+            var selectedSentence = enSentences[sentenceId]
+            var czText = selectTranslation(selectedSentence.CZ_Id)
+            setTranslation(czText);
+
+            if (selMode == true) {
+                if (word_selected == 'true') {
+                    selObj[selectedIdElement].setAttribute("word_selected", "false");
+                    delete sentenceList[idElement];
+                    selectedSentence.selected = false;
+
+                } else {
+                    selObj[selectedIdElement].setAttribute("word_selected", "true");
+                    sentenceList[idElement] = selectedSentence;
+                    selectedSentence.selected = true;
+                };
+            } else {
+                TimeSelector.Stop = selectedSentence.Stop;
+                TimeSelector.Start = selectedSentence.Start;
+                settime();
+
+            }
+
         }
 
         function selecteItem() {
 
-
             var selObj = document.getElementById("select_word_en");
             aria.id = document.getElementById("select_word_en").value;
-            var word_selected = selObj[aria.id].getAttribute("word_selected");
-            var ss = enSentences[aria.id]
-            if (word_selected == 'true') {
-                selObj[aria.id].setAttribute("word_selected", "false");
-                delete word[aria.id];
-            } else {
-                selObj[aria.id].setAttribute("word_selected", "true");
-                word[aria.id] = TimeList[aria.id];
+            var idElement = parseInt(aria.id);
+            var selectedIdElement = idElement - 1;
+            var word_selected = selObj[selectedIdElement].getAttribute("word_selected");
+            selectedWord = enWords[idElement]
 
+            // clear senetnecs box
+            var optDefault = optSentences.options[0]
+            while (optSentences.childElementCount > 0) {
+                optSentences.options.remove(0);
             }
+
+            // add sentences 
+            valueCounter = 1;
+            for (element of selectedWord.sentence) {
+                var sentenceAdding = enSentences[element];
+                var opt = document.createElement("option");
+                opt.text = sentenceAdding.Text
+                opt.setAttribute("role", "word");
+                opt.setAttribute("word_selected", sentenceAdding.selected);
+                opt.setAttribute("IdElement", sentenceAdding.Id);
+                opt.value = valueCounter;
+                valueCounter += 1;
+                optSentences.options.add(opt);
+            };
+
+            if (lastWord != selectedWord.Word) {
+                lastWord = selectedWord.Word
+            } else {
+                if (word_selected == 'true') {
+                    selObj[selectedIdElement].setAttribute("word_selected", "false");
+                    delete word[selectedIdElement];
+                    selectedWord.selected = false;
+                } else {
+                    selObj[selectedIdElement].setAttribute("word_selected", "true");
+                    word[selectedIdElement] = selObj[selectedIdElement];
+                    selectedWord.selected = true;
+                }
+            }
+
+
 
 
             //document.getElementById("select_sentence_en").options.add(selObj[aria.id]);  

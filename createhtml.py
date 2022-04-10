@@ -57,18 +57,17 @@ class htmlCreator:
         textOption = b""
         WordList = self.Words[Language]
         SentenceList = self.Sentences[Language]
-        a = 0
-
+        a=0
         for Word in WordList:
             Item = WordList[Word]
             jsonWords[WordList[Word]['Id']] = WordList[Word]
             WordId = str(WordList[Word]['Id']).encode()
             textOption += self.optionTemp.replace(b"XXXid",WordId)\
-                                            .replace(b"XXXword",WordList[Word]['Word'].encode())\
+                                            .replace(b"XXXword",WordList[Word]['Word'].encode().replace(b']',b'').replace(b'[',b''))\
                                             .replace(b"XXXrole",b"word")
 
             a+=1
-            if a>4:
+            if a>Count:
                 break
 
         textJson = str(jsonWords).encode().replace(b'\n',b' ').replace(b'\r',b'').replace(b'\\n',b' ')
@@ -87,7 +86,7 @@ class htmlCreator:
         textJson = b"\r\n"
         textOption = b""
         SentenceList = self.Sentences[Language]
-        a=0
+        a = 0
         for Sentence in SentenceList:
             Item = SentenceList[Sentence]
             Item['Start'] = self.convertToSec(Item['Start'])
@@ -96,13 +95,11 @@ class htmlCreator:
             jsonSentences[Item['Id']] = Item   
             WordId = str(Item['Id']).encode()
             textOption += self.optionTemp.replace(b"XXXid",WordId)\
-                                            .replace(b"XXXword",Item['Text'].encode())\
-                                            .replace(b"XXXrole",b"sentence")
+                                            .replace(b"XXXword",Item['Text'].encode().replace(b']',b'').replace(b'[',b''))\
+                                            .replace(b"XXXrole",b"word")
             a+=1
-            if a>4:
-                break  
-
-
+            if a>Count:
+                break
 
         textJson = str(jsonSentences).encode().replace(b'\n',b' ').replace(b'\r',b'').replace(b'\\n',b' ')
         textJson += b"\r\n"
@@ -119,6 +116,7 @@ class htmlCreator:
 
 if __name__ == "__main__":
     html = htmlCreator()
+    Count = 99999
     enWords,wordOption = html.htmlWordExport()
     enSentences,sentenceOption = html.htmlSentenceExport()
     czWords,notUsed = html.htmlWordExport("CZ")
