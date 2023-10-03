@@ -40,6 +40,16 @@ regex = re.compile("[A-Za-záčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤ�
 reSentences = re.compile("[A-ZáčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ][A-Za-záčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ ,\r\n]+".encode('utf-8'))
 reTime = re.compile(b"[0-9]+:[0-9]+:[0-9 ,]+--> [0-9]+:[0-9]+:[0-9 ,]+")
 reTimeStartStop = re.compile(b"[0-9]+:[0-9]+:[0-9 ,]+")
+knownWords = {}
+
+if (xx.FileExists("subtitles\\knownWords.txt")):
+    knownWordsTxt = xx.readFile("subtitles\\knownWords.txt")
+
+    for i in knownWordsTxt.split(b"\r\n"):
+        knownWords[i.upper()] = 1
+
+    
+
 
 
 # in subtitles directory there should be directory with the languages. 
@@ -84,18 +94,19 @@ for Language in Languages:
                 Sentence[idSentence] = {}
                 Sentence[idSentence]["Words"] = []
                 for Word in regex.findall(Text):
-                    if (Word.lower() in Words):
-                        # check if this sentence is already added to the word's sentence list.                        
-                        if (idSentence not in Words[Word.lower()]["sentence"]):
-                            Words[Word.lower()]["sentence"].append(idSentence)
-                            Sentence[idSentence]["Words"].append(Words[Word.lower()]["Id"])
+                    if not(Word.upper() in knownWords):
+                        if (Word.lower() in Words):
+                            # check if this sentence is already added to the word's sentence list.                        
+                            if (idSentence not in Words[Word.lower()]["sentence"]):
+                                Words[Word.lower()]["sentence"].append(idSentence)
+                                Sentence[idSentence]["Words"].append(Words[Word.lower()]["Id"])
 
-                    else:
-                        Words[Word.lower()] = {}
-                        Words[Word.lower()]["sentence"] = [idSentence]
-                        Words[Word.lower()]["Id"] = idWord                        
-                        Sentence[idSentence]["Words"].append(idWord)
-                        idWord += 1
+                        else:
+                            Words[Word.lower()] = {}
+                            Words[Word.lower()]["sentence"] = [idSentence]
+                            Words[Word.lower()]["Id"] = idWord                        
+                            Sentence[idSentence]["Words"].append(idWord)
+                            idWord += 1
                 
                 Sentence[idSentence]["Id"] = idSentence
                 Sentence[idSentence]["Text"] = Text
@@ -118,6 +129,7 @@ for Language in Languages:
         Sentence[i]["Words"] = str(Sentence[i]["Words"])
         DataSentence.append(Sentence[i])
     for i in Words:
+        
         aux = {}
         aux["Word"] = i
         aux["Id"] = Words[i]["Id"]

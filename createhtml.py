@@ -91,11 +91,12 @@ class htmlCreator:
             Item = SentenceList[Sentence]
             Item['Start'] = self.convertToSec(Item['Start'])
             Item['Stop'] = self.convertToSec(Item['Stop'])
-            Item['Duration'] = 1000*(Item['Stop'] - Item["Start"])       
+            Item['Duration'] = 1000*(Item['Stop'] - Item["Start"])    
+            Item['Text'] = Item['Text'].replace(']','').replace('[','')   
             jsonSentences[Item['Id']] = Item   
             WordId = str(Item['Id']).encode()
             textOption += self.optionTemp.replace(b"XXXid",WordId)\
-                                            .replace(b"XXXword",Item['Text'].encode().replace(b']',b'').replace(b'[',b''))\
+                                            .replace(b"XXXword",Item['Text'].encode())\
                                             .replace(b"XXXrole",b"word")
             a+=1
             if a>Count:
