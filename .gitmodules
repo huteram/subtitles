@@ -1,0 +1,3 @@
+[submodule "MyPkg"]
+	path = MyPkg
+	url = https://github.com/huteram/MyPythonClass.git
