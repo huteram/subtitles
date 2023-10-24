@@ -1,14 +1,8 @@
 import re
-import MyFile
-import MujXLS
-import vlc
-
-##media = vlc.MediaPlayer("test.avi")
-##media.set_time(2000)
-##media.play()
-##media.pause()
-
-
+import MyPkg.MyFile as MyFile
+import MyPkg.MujXLS as MujXLS
+import requests
+import bs4 as bs
 
 def convertToSec(Time):
     TimeList = Time.split(b":")
@@ -21,10 +15,47 @@ def convertToSec(Time):
 
 
 def Coding(Text):
+    if type(Text) is str:
+        result = Text.encode('utf-8')
+    else:
+        try:
+            result = Text.decode('utf-8').encode('utf-8')
+        except:
+            result = Text.decode('cp1250').encode('utf-8')
+    return result
+
+def readSourceHtml(Word):
+    Url = 'https://slovnik.seznam.cz/preklad/cesky_anglicky/'.encode()
     try:
-        result = Text.decode('utf-8').encode('utf-8')
+        Url += Word.encode()
     except:
-        result = Text.decode('cp1250').encode('utf-8')
+        Url += Word
+    Respons = requests.get(Url, allow_redirects=True)
+    Soup = bs.BeautifulSoup(Respons.content, 'html.parser')
+    return Soup
+
+def findEnglishWord(Soup, Word):
+    Translation = Soup.find_all(class_="TranslatePage-word--word")
+    if len(Translation) > 0:
+        result = Translation[0].text
+    else:
+        result = Word
+    return result    
+
+def findCzechEnglishTranslation(Soup):
+    Translation = Soup.find_all(class_="Box-content-line")
+    result = None
+    if len(Translation) > 0:
+        result = Translation[0].text
+    else:
+        Translation = Soup.find_all(class_="TranslatePage-results-short")
+        if len(Translation)>0:
+            Translation = Translation[0].findAll('a')
+            newWord = Translation[0].text
+            newSoup = readSourceHtml(newWord)
+            result = findEnglishWord(newSoup, newWord)
+        else:
+            result = None
     return result
 
 
@@ -36,17 +67,16 @@ xx = MyFile.FileSystem()
 # reSentences - all sentence.
 # reTime - Time row.
 # reTimeStartStop - find times in time row.
-regex = re.compile("[A-Za-záčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ]+".encode('utf-8'))
-reSentences = re.compile("[A-ZáčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ][A-Za-záčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ ,\r\n]+".encode('utf-8'))
+regex = re.compile('\w+')
 reTime = re.compile(b"[0-9]+:[0-9]+:[0-9 ,]+--> [0-9]+:[0-9]+:[0-9 ,]+")
 reTimeStartStop = re.compile(b"[0-9]+:[0-9]+:[0-9 ,]+")
 knownWords = {}
 
 if (xx.FileExists("subtitles\\knownWords.txt")):
-    knownWordsTxt = xx.readFile("subtitles\\knownWords.txt")
-
-    for i in knownWordsTxt.split(b"\r\n"):
-        knownWords[i.upper()] = 1
+    KnownWordData = yy.ReadXLS(xx.localDirectory(__file__) + '\\spreadSheets\\known.xlsx')
+    for Language in KnownWordData:
+        for Word in KnownWordData[Language]['Data']:
+            knownWords[Coding(Word['Word'].upper())] = Language
 
     
 
@@ -67,6 +97,8 @@ for Language in Languages:
     Files = xx.listFile("\\subtitles\\" + Language + "\\")
     for i in Files:
         titulky = Coding(xx.readFile(i))
+    titulky = titulky.replace(b"\r\n",b"\n")
+
     counter = 1
     Words = {}
     Sentence = {}
@@ -74,39 +106,49 @@ for Language in Languages:
     idSentence = 1
     idWord = 1
 
-
-    for i in re.split(b"\r\n[0-9]+\r\n",titulky):
+    for Subtitle in re.split(b"\n[0-9]+\n",titulky):
         counter +=1
-        Time = reTimeStartStop.findall(i)
+        Time = reTimeStartStop.findall(Subtitle)
         if len(Time) > 2:
             print ("too much times: ")
             print (Time)
             print ("from: ")
-            print (i)
+            print (Subtitle)
             TimeStart = "00"
             TimeStop = "00"
             
         else:
             TimeStart = Time[0]
             TimeStop = Time[1]
-            Text = i.split(TimeStop)[-1][2:-2]
+            Text = Subtitle.split(TimeStop)[-1][1:-1]
             if (Text.lower() not in aSentence):
                 Sentence[idSentence] = {}
                 Sentence[idSentence]["Words"] = []
-                for Word in regex.findall(Text):
-                    if not(Word.upper() in knownWords):
-                        if (Word.lower() in Words):
-                            # check if this sentence is already added to the word's sentence list.                        
-                            if (idSentence not in Words[Word.lower()]["sentence"]):
-                                Words[Word.lower()]["sentence"].append(idSentence)
-                                Sentence[idSentence]["Words"].append(Words[Word.lower()]["Id"])
-
+                for Word in regex.findall(Text.decode('utf-8')):
+                    if not(Word.upper() in knownWords or Word.isdigit()):
+                        htmlWordSoup = readSourceHtml(Word)
+                        translation = findCzechEnglishTranslation(htmlWordSoup)
+                        if translation is None :
+                            print (Word, " was not find in dictionary")
                         else:
-                            Words[Word.lower()] = {}
-                            Words[Word.lower()]["sentence"] = [idSentence]
-                            Words[Word.lower()]["Id"] = idWord                        
-                            Sentence[idSentence]["Words"].append(idWord)
-                            idWord += 1
+                            if Language == 'EN':
+                                Word = findEnglishWord(htmlWordSoup, Word)
+                                WordCz = findCzechEnglishTranslation(htmlWordSoup)
+                            
+                            if (Word.lower() in Words):
+                                # check if this sentence is already added to the word's sentence list.                        
+                                if (idSentence not in Words[Word.lower()]["sentence"]):
+                                    Words[Word.lower()]["sentence"].append(idSentence)
+                                    Sentence[idSentence]["Words"].append(Words[Word.lower()]["Id"])
+                            else:
+                                Words[Word.lower()] = {}
+                                Words[Word.lower()]["sentence"] = [idSentence]
+                                Words[Word.lower()]["Id"] = idWord                        
+                                Sentence[idSentence]["Words"].append(idWord)
+                                if Language == 'EN':
+                                    Words[Word.lower()]["Translation"] = WordCz
+
+                                idWord += 1
                 
                 Sentence[idSentence]["Id"] = idSentence
                 Sentence[idSentence]["Text"] = Text
